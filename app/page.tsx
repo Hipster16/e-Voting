@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Navbar from "./components/Navbar";
 import LoginButtons from "./components/LoginButtons";
 
@@ -9,7 +8,7 @@ export default function Home() {
         <Navbar />
         <div className="">
           <div className="flex flex-col gap-10 items-center text-center mt-20">
-            <h1 className="text-8xl w-[70%] font-extrabold">Vote Without Rigging</h1>
+            <h1 className="text-8xl w-[70%] font-bold">Vote Without Rigging</h1>
             <p className="text-xl  w-[50%]">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt
               et veritatis autem ipsa, a consectetur enim molestiae nostrum
