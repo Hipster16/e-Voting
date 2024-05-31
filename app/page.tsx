@@ -1,5 +1,5 @@
-import Navbar from "./components/Navbar";
-import LoginButtons from "./components/LoginButtons";
+import Navbar from "@/app/components/Navbar";
+import LoginButtons from "@/app/components/LoginButtons";
 
 export default function Home() {
   return (
