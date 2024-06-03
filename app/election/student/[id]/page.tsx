@@ -88,7 +88,7 @@ function Row() {
               <DialogClose className="bg-red-600 text-lg text-white w-[100px] font-medium py-2 px-5 rounded-full hover:bg-black ">
                 No
               </DialogClose>
-              <button className="bg-blue-600 text-lg text-white w-[100px] font-medium py-2 px-5 rounded-full hover:bg-black hover:text-blue-600">
+              <button className="bg-blue-600 text-lg text-white w-[100px] font-medium py-2 px-5 rounded-full hover:bg-black hover:text-white">
                 yes
               </button>
             </DialogFooter>

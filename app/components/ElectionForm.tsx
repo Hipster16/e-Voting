@@ -121,7 +121,7 @@ export default function ElectionForm() {
                 name="ElectionDescription"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className={labelStyle}>Election Name</FormLabel>
+                    <FormLabel className={labelStyle}>Election Description</FormLabel>
                     <FormControl>
                       <textarea
                         placeholder="Enter the election name"
