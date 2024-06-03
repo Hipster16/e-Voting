@@ -24,7 +24,7 @@ function ElectionInfo() {
       <div className="w-full h-full rounded-3xl border-1 border-gray-200 p-10 mx-auto">
         <Navbar />
         <div className="w-full h-full mt-12 flex flex-col items-center gap-5">
-          <h1 className="text-4xl text-bold ">Election Name</h1>
+          <h1 className="text-4xl font-semibold ">Election Name</h1>
           <p className="text-lg w-[70%]">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis velit
             optio pariatur nisi ipsum adipisci exercitationem ratione quam
