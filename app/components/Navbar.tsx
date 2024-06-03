@@ -8,7 +8,7 @@ export default function Navbar() {
         <h1 className='font-semibold text-xl'><span className='text-blue-600'>e</span>Voting</h1>
         <Popover>
           <PopoverTrigger>
-            <button className='bg-blue-600 font-semibold py-4 px-10 rounded-full hover:bg-white hover:text-blue-600'>Login</button>
+            <div className='bg-blue-600 font-semibold py-4 px-10 rounded-full hover:bg-white hover:text-blue-600 cursor-pointer'>Login</div>
           </PopoverTrigger>
           <PopoverContent className="w-60 h-full bg-white border-2 border-slate-100/45 text-white m-5 ">
               <div className='flex flex-col justify-between h-full gap-6'>
