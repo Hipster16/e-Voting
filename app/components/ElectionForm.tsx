@@ -40,7 +40,7 @@ export default function ElectionForm() {
   const [CandidateErrorMsg, setCandidateErrorMsg] = useState("");
   const [ParticipantErrorMsg, setPariticipantErrorMsg] = useState("");
 
-  const [Page, setPage] = useState<number>(4);
+  const [Page, setPage] = useState<number>(1);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

@@ -18,7 +18,10 @@ export default function ElectionGrid() {
   };
 
   const handleFilter = (elem: string) => {
-    if (!Search && elem.includes(Search)) {
+    if(!Search) {
+      return elem
+    }
+    if (Search && elem.includes(Search)) {
       return elem;
     } else {
       return null;
