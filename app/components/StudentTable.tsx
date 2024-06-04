@@ -65,9 +65,13 @@ export const columns: ColumnDef<student>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <div className=" flex items-center gap-3">
-          Id
-          {column.getIsSorted() !== "desc" && <MoveUp size={18} color="black" strokeWidth={1} />}
-          {column.getIsSorted() === "desc" && <MoveDown size={18} color="black" strokeWidth={1} />}
+            Id
+            {column.getIsSorted() !== "desc" && (
+              <MoveUp size={18} color="black" strokeWidth={1} />
+            )}
+            {column.getIsSorted() === "desc" && (
+              <MoveDown size={18} color="black" strokeWidth={1} />
+            )}
           </div>
         </button>
       );
@@ -82,9 +86,13 @@ export const columns: ColumnDef<student>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <div className=" flex items-center gap-3">
-          Email
-          {column.getIsSorted() !== "desc" && <MoveUp size={18} color="black" strokeWidth={1} />}
-          {column.getIsSorted() === "desc" && <MoveDown size={18} color="black" strokeWidth={1} />}
+            Email
+            {column.getIsSorted() !== "desc" && (
+              <MoveUp size={18} color="black" strokeWidth={1} />
+            )}
+            {column.getIsSorted() === "desc" && (
+              <MoveDown size={18} color="black" strokeWidth={1} />
+            )}
           </div>
         </button>
       );
@@ -99,9 +107,13 @@ export const columns: ColumnDef<student>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <div className=" flex items-center gap-3">
-          Colllege Id
-          {column.getIsSorted() !== "desc" && <MoveUp size={18} color="black" strokeWidth={1} />}
-          {column.getIsSorted() === "desc" && <MoveDown size={18} color="black" strokeWidth={1} />}
+            Colllege Id
+            {column.getIsSorted() !== "desc" && (
+              <MoveUp size={18} color="black" strokeWidth={1} />
+            )}
+            {column.getIsSorted() === "desc" && (
+              <MoveDown size={18} color="black" strokeWidth={1} />
+            )}
           </div>
         </button>
       );
