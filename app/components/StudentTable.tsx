@@ -20,6 +20,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { student } from "@/Models/types/student";
 import { DataTableProps } from "@/Models/types/tableData";
+import { MoveDown, MoveUp } from "lucide-react";
 
 export const dummyData: student[] = [
   {
@@ -63,7 +64,11 @@ export const columns: ColumnDef<student>[] = [
         <button
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
+          <div className=" flex items-center gap-3">
           Id
+          {column.getIsSorted() !== "desc" && <MoveUp size={18} color="black" strokeWidth={1} />}
+          {column.getIsSorted() === "desc" && <MoveDown size={18} color="black" strokeWidth={1} />}
+          </div>
         </button>
       );
     },
@@ -76,7 +81,11 @@ export const columns: ColumnDef<student>[] = [
         <button
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
+          <div className=" flex items-center gap-3">
           Email
+          {column.getIsSorted() !== "desc" && <MoveUp size={18} color="black" strokeWidth={1} />}
+          {column.getIsSorted() === "desc" && <MoveDown size={18} color="black" strokeWidth={1} />}
+          </div>
         </button>
       );
     },
@@ -89,7 +98,11 @@ export const columns: ColumnDef<student>[] = [
         <button
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          College Id
+          <div className=" flex items-center gap-3">
+          Colllege Id
+          {column.getIsSorted() !== "desc" && <MoveUp size={18} color="black" strokeWidth={1} />}
+          {column.getIsSorted() === "desc" && <MoveDown size={18} color="black" strokeWidth={1} />}
+          </div>
         </button>
       );
     },

@@ -20,6 +20,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+import { Check } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import StudentTable, { columns, dummyData } from "./StudentTable";
 import { formSchema } from "@/Models/schema/electionFormSchema";
@@ -38,7 +40,7 @@ export default function ElectionForm() {
   const [CandidateErrorMsg, setCandidateErrorMsg] = useState("");
   const [ParticipantErrorMsg, setPariticipantErrorMsg] = useState("");
 
-  const [Page, setPage] = useState<number>(1);
+  const [Page, setPage] = useState<number>(4);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,7 +106,7 @@ export default function ElectionForm() {
                 name="ElectionName"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className={labelStyle}>Election Name</FormLabel>
+                    <FormLabel className={labelStyle}>Election Name<span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <input
                         placeholder="Enter the election name"
@@ -124,7 +126,7 @@ export default function ElectionForm() {
                     <FormLabel className={labelStyle}>Election Description</FormLabel>
                     <FormControl>
                       <textarea
-                        placeholder="Enter the election name"
+                        placeholder="Enter the election Description"
                         {...field}
                         className={inputStyle}
                       />
@@ -138,7 +140,7 @@ export default function ElectionForm() {
                 name="EndDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className={labelStyle}>End Date</FormLabel>
+                    <FormLabel className={labelStyle}>End Date<span className="text-red-500">*</span></FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -195,7 +197,7 @@ export default function ElectionForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel className={`${labelStyle} text-md`}>
-                    <h1 className="texl-3xl font-semibold my-2">Acknoledgement</h1>
+                    <h1 className="texl-3xl font-semibold my-2">Acknoledgement<span className="text-red-500">*</span></h1>
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                     Pariatur quia ea maiores neque cumque iste in saepe! Hic
                     dolorum, beatae, dolor exercitationem pariatur, sed autem
@@ -209,7 +211,7 @@ export default function ElectionForm() {
                       className={`${
                         field.value ? "bg-green-400" : "bg-transparent"
                       } border-black border-1 w-[30px] h-[30px] rounded-md`}
-                    ></Checkbox>
+                    >{field.value && <Check color="#ffffff" className="m-auto"/>}</Checkbox>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
