@@ -1,13 +1,7 @@
 import app from "@/firebase/firebaseConfig";
 import {
-  User,
   getAuth,
-  isSignInWithEmailLink,
   onAuthStateChanged,
-  sendSignInLinkToEmail,
-  signInWithEmailAndPassword,
-  signInWithEmailLink,
-  signOut,
 } from "firebase/auth";
 
 // const actionCodeSettings = {
