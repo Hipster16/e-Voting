@@ -15,7 +15,7 @@ export default function Home() {
               deserunt corporis suscipit, esse atque maxime quod voluptatibus
               quas vitae unde cumque.
             </p>
-            <LoginButtons />
+            {<LoginButtons />}
           </div>
         </div>
       </div>
