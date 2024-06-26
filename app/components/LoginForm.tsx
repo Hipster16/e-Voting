@@ -76,7 +76,7 @@ export default function LoginForm() {
               <FormLabel className={labelStyle}>Password</FormLabel>
               <FormControl>
                 <input
-                  type="text"
+                  type="password"
                   className={inputStyle}
                   placeholder="Enter the password"
                   {...field}
