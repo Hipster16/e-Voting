@@ -30,7 +30,7 @@ export default function LoginForm() {
     signInWithEmailAndPassword(auth.authState, values.email, values.password)
       .then((userCredentials) => {
         console.log(userCredentials.user);
-        router.push("/")
+        router.push("/student/dashboard")
       })
       .catch((error) => {
         setErrormsg("Invalid Username or password")
@@ -40,7 +40,7 @@ export default function LoginForm() {
   useEffect(() => {
     auth.getUser();
     if (auth.authState.currentUser) {
-      router.push("/");
+      router.push("/student/dashboard");
     }
   });
 

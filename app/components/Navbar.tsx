@@ -56,7 +56,7 @@ export default function Navbar() {
                 Admin
               </Link>
               <Link
-                href={"/login/student"}
+                href={"student/login"}
                 className="bg-blue-600 text-xl text-center font-semibold py-4 px-10 rounded-full hover:bg-black"
               >
                 student

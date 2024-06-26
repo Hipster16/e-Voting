@@ -19,7 +19,7 @@ export default function LoginButtons() {
   };
 
   const handleStudentLogin = () => {
-    router.push("/login/student");
+    router.push("/student/login");
   };
 
   useEffect(() => {
