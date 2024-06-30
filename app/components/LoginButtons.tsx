@@ -15,7 +15,7 @@ export default function LoginButtons() {
   };
 
   const handleAdminLogin = () => {
-    router.push("/login/admin");
+    router.push("/admin/login");
   };
 
   const handleStudentLogin = () => {

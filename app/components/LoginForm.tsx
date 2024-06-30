@@ -15,9 +15,11 @@ import auth from "@/firebase/auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useMetaMask } from "../hooks/useMetamask";
 
 export default function LoginForm() {
   const labelStyle = "text-black text-xl font-medium";
+  const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
   const inputStyle = "bg-blue-100/60 p-5 text-black rounded-2xl";
   const [errormsg, setErrormsg] = useState("");
   const router = useRouter();
@@ -38,6 +40,9 @@ export default function LoginForm() {
   }
 
   useEffect(() => {
+    if(wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
+      router.push("/")
+    }
     auth.getUser();
     if (auth.authState.currentUser) {
       router.push("/student/dashboard");
