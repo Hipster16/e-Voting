@@ -16,7 +16,6 @@ export default function ElectionGrid() {
     const contract = await connectContract();
     const transaction = await contract.getAllElection()
     let elections =transaction.map((election:any, index:number) => {
-      console.log(election)
       return {
         electionName: election[1],
         electionDesc: election[2],

@@ -20,8 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ethers, getBigInt } from "ethers";
-import Evoting from "@/artifacts/contracts/Evoting.sol/Evoting.json";
+import { ethers } from "ethers";
 import { Check } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import StudentTable, { columns } from "./StudentTable";
