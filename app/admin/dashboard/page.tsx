@@ -1,10 +1,8 @@
 "use client"
 import AdminGrid from "@/app/components/AdminGrid";
 import Navbar from "@/app/components/Navbar";
-import { useMetaMask } from "@/app/hooks/useMetamask";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 
 function AdminDashboard() {
   return (

@@ -3,6 +3,7 @@ pragma solidity >=0.8.2 < 0.9.0;
 
 contract Evoting {
     struct Election {
+        uint electionid;
         string election_name;
         string election_desc;
         uint endDate;
@@ -73,7 +74,6 @@ contract Evoting {
     function createElection(
         string memory _electionname,
         string memory _electionDesc,
-        uint256 _endDate,
         string[] memory _candidatelist,
         address payable[] memory _wallets,
         string[] memory _uid
@@ -83,10 +83,11 @@ contract Evoting {
             _votes[i] = 0;
         }
         elections[id] = Election({
+                electionid: id,
                 election_name: _electionname,
                 election_desc: _electionDesc,
                 status: true,
-                endDate: _endDate,
+                endDate: block.timestamp + 100 weeks,
                 candidateNames: _candidatelist,
                 votes: _votes,
                 maxvotes: _wallets.length
@@ -148,7 +149,7 @@ contract Evoting {
     }
     
     function endElection(uint _electionid) public electionExist(_electionid) owner {
-        require(elections[_electionid].endDate<block.timestamp, "Election has already ended");
+        require(elections[_electionid].endDate>block.timestamp, "Election has already ended");
         elections[_electionid].status = false;
     }
 

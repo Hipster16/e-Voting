@@ -1,32 +1,52 @@
 "use client";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import AdminCard from "./AdminCard";
+import { connectContract } from "../utils";
+
+type electionData = {
+  electionName: string;
+  electionDesc: string;
+  id: number
+}
 
 export default function ElectionGrid() {
+  const [dataFetched, setDataFetched] = useState(false);
+  const [data, setdata] = useState<electionData[]>([])
+  const getAll = async () => {
+    const contract = await connectContract();
+    const transaction = await contract.getAllElection()
+    let elections =transaction.map((election:any, index:number) => {
+      console.log(election)
+      return {
+        electionName: election[1],
+        electionDesc: election[2],
+        id: Number(election[0])
+      };
+    })
+    elections.pop()
+    setdata(elections);
+    setDataFetched(true)
+  }
   const [Search, setSearch] = useState("");
-  const electionNames = [
-    "Election 1",
-    "Election 2",
-    "Election 3",
-    "Election 4",
-    "Election 5",
-    "Election 6",
-  ];
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  const handleFilter = (elem: string) => {
+  const handleFilter = (elem: electionData) => {
     if(!Search) {
       return elem
     }
-    if (Search && elem.includes(Search)) {
+    if (Search && elem.electionName.includes(Search)) {
       return elem;
     } else {
       return null;
     }
   };
+
+  useEffect(() => {
+    if(!dataFetched) getAll();
+  })
 
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -37,18 +57,18 @@ export default function ElectionGrid() {
         onChange={handleSearch}
       />
 
-      {electionNames.filter(handleFilter).length == 0 ? (
+      {data.filter(handleFilter).length == 0 ? (
         <p className="p-20 text-center text-2xl">No Elections found</p>
       ) : (
         <div className="w-full h-full mt-10 grid grid-cols-[repeat(auto-fill,375px)] gap-[50px] justify-center">
-          {electionNames.filter(handleFilter).map((election) => {
+          {data.filter(handleFilter).map((election) => {
             return (
               <AdminCard
-                key={election}
-                name={election}
-                desc="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus culpa amet ab? Sequi quisquam officiis magnam."
+                eletionid={election.id}
+                name={election.electionName}
+                desc={election.electionDesc}
                 endDate="Wed Nov 2, 2024"
-                pagelink="/login/student"
+                pagelink="/admin/dashboard"
               />
             );
           })}

@@ -3,7 +3,9 @@ type accountType = {
   privateKey: string[];
 }
 
+import { ethers } from 'ethers';
 import { Web3 } from 'web3';
+import Evoting from "@/artifacts/contracts/Evoting.sol/Evoting.json"
 
 export const formatBalance = (rawBalance: string) => {
   const balance = (parseInt(rawBalance) / 1000000000000000000).toFixed(2);
@@ -29,3 +31,11 @@ export const createNewWallet = (num: number) => {
   }
   return accounts
 }
+
+export const connectContract = async () => {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
+      let contract = new ethers.Contract(contractAddress, Evoting.abi, signer)
+      return contract
+}  

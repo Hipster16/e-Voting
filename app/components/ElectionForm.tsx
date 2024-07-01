@@ -33,7 +33,7 @@ import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import db from "@/firebase/firestore";
 import { student } from "@/Models/types/student";
 import { useMetaMask } from "../hooks/useMetamask";
-import { createNewWallet } from "../utils";
+import { connectContract, createNewWallet } from "../utils";
 
 export default function ElectionForm() {
   const labelStyle = "text-black text-xl font-medium";
@@ -93,10 +93,7 @@ export default function ElectionForm() {
     setsubmitting(true);
     try {
       const wallets = createNewWallet(SelectedParticipants.length);
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
-      let contract = new ethers.Contract(contractAddress, Evoting.abi, signer)
+      const contract = await connectContract()
       let candidates = SelectedCandidates.map((candidate) => {
         return candidate.email;
       })
@@ -106,7 +103,6 @@ export default function ElectionForm() {
       let transaction = await contract.createElection(
         values.ElectionName,
         values.ElectionDescription,
-        getBigInt("111111111111111111111111"),
         candidates,
         wallets.address,
         uids,
@@ -117,7 +113,6 @@ export default function ElectionForm() {
       await transaction.wait()
       console.log(transaction);
       await addDoc(collection(db, "Elections"), {
-        id: 1,
         name: values.ElectionName,
         privateKeys: wallets.privateKey,
         participants: SelectedParticipants.map((participant: student) => {
@@ -127,9 +122,6 @@ export default function ElectionForm() {
           };
         }),
       });
-      console.log(values);
-      console.log(SelectedCandidates);
-      console.log(SelectedParticipants);
       form.reset();
       setsubmitting(false);
       router.push("/admin/dashboard");
