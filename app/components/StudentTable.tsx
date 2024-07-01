@@ -22,29 +22,6 @@ import { student } from "@/Models/types/student";
 import { DataTableProps } from "@/Models/types/tableData";
 import { MoveDown, MoveUp } from "lucide-react";
 
-export const dummyData: student[] = [
-  {
-    id: "1",
-    email: "vinubkurup.b21cs1262@mbcet.ac.in",
-    clgId: "B21CS1260",
-  },
-  {
-    id: "2",
-    email: "ainubkurup.b21cs1262@mbcet.ac.in",
-    clgId: "B21CS1261",
-  },
-  {
-    id: "3",
-    email: "dinubkurup.b21cs1262@mbcet.ac.in",
-    clgId: "B21CS1262",
-  },
-  {
-    id: "4",
-    email: "kinubkurup.b21cs1262@mbcet.ac.in",
-    clgId: "B21CS1263",
-  },
-];
-
 export const columns: ColumnDef<student>[] = [
   {
     header: "Select",

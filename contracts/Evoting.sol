@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.2 < 0.9.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-
-contract Evoting is ERC20{
+contract Evoting {
     struct Election {
         string election_name;
         string election_desc;
@@ -15,11 +12,14 @@ contract Evoting is ERC20{
         uint maxvotes;
     }
 
-    uint256 public  id=1;
+    uint256 private id=1;
     address public admin;
 
     mapping (uint => Election) public elections;
-    mapping(uint => mapping(address => bool)) private voted;
+    mapping(uint256 => mapping(address => bool)) private voted;
+    mapping (uint => address payable[]) private wallet;
+    mapping (uint => bytes32[]) private uids;
+    mapping(uint256 => mapping(bytes32 => bool)) private votedUid;
 
     event CreateEvent(uint256 _id, address creator, string msg);
     event VoteEvent(uint _electionid, address voter, string msg);
@@ -28,10 +28,24 @@ contract Evoting is ERC20{
         require(msg.sender == admin, "Only owner can perform this action");
         _;
     }
-    modifier votable(uint256 _electionid) {
+    modifier votable(uint256 _electionid, string memory _uid) {
         require(msg.sender != admin, "Admin cannot participate in the election");
-        require(balanceOf(msg.sender) == 1, "You do not have token to vote");
-        require(!voted[_electionid][msg.sender], "You have already voted");
+        require(!voted[_electionid][msg.sender] && !votedUid[_electionid][keccak256(abi.encodePacked(_uid))], "You have already voted");
+        bool flag1 = false;
+        bool flag2 = false;
+        for(uint i=0; i<wallet[_electionid].length; i++) {
+            if(msg.sender == wallet[_electionid][i]){
+                flag1 = true;
+                break;
+            }
+        } 
+        for(uint i=0; i<uids[_electionid].length; i++) {
+            if(keccak256(abi.encodePacked(_uid)) == uids[_electionid][i]){
+                flag2 = true;
+                break;
+            }
+        } 
+        require(flag1 && flag2, "This acccount is not allowed to vote in current election");
         _;
     }
 
@@ -40,15 +54,8 @@ contract Evoting is ERC20{
         _;
     }
 
-    constructor () ERC20("Electoken", "ELT") {
+    constructor () {
         admin = msg.sender;
-    }
-
-    function transfer(address to, uint256 value) public virtual override  returns (bool) {
-        address owneraddr = _msgSender();
-        require(owneraddr==admin, "only owner can transfer tokens");
-        _transfer(owneraddr, to, value);
-        return true;
     }
 
     function initializeVote(string[] memory _candidatelist)
@@ -65,27 +72,32 @@ contract Evoting is ERC20{
 
     function createElection(
         string memory _electionname,
-        string memory _desc,
+        string memory _electionDesc,
         uint256 _endDate,
         string[] memory _candidatelist,
-        address[] memory _wallets
-    ) public owner {
+        address payable[] memory _wallets,
+        string[] memory _uid
+    ) public payable owner {
         uint256[] memory _votes = new uint256[](_candidatelist.length);
         for (uint256 i = 0; i < _candidatelist.length; i++) {
             _votes[i] = 0;
         }
         elections[id] = Election({
                 election_name: _electionname,
-                election_desc: _desc,
+                election_desc: _electionDesc,
                 status: true,
                 endDate: _endDate,
                 candidateNames: _candidatelist,
                 votes: _votes,
                 maxvotes: _wallets.length
             });
-        _mint(admin, _wallets.length);
+           uint amount = msg.value/_wallets.length;
         for(uint i=0; i<_wallets.length; i++){
-            transfer(_wallets[i], 1);
+            _wallets[i].transfer(amount);
+            wallet[id].push(_wallets[i]);
+        }
+        for(uint i=0; i<_uid.length; i++){
+            uids[id].push(keccak256(abi.encodePacked(_uid[i])));
         }
         voted[id][msg.sender] = true;
         emit CreateEvent(id, msg.sender, "The election has been created successfully");
@@ -94,6 +106,14 @@ contract Evoting is ERC20{
 
     function getElection(uint256 _electionid) public view electionExist(_electionid) returns (Election memory) {
         return elections[_electionid];
+    }
+
+    function getAllElection() public view returns(Election[] memory) {
+        Election[] memory _elections = new Election[](id);
+        for(uint i=1; i<=id; i++){
+            _elections[i-1] = elections[i];
+        }
+        return _elections;
     }
 
     function compareStrings(string memory _a, string memory _b) private pure returns(bool) {
@@ -108,15 +128,15 @@ contract Evoting is ERC20{
         return sum;
     }
 
-    function vote(uint _electionid, string memory _candidateName) public votable(_electionid) electionExist(_electionid)  {
+    function vote(string memory _uid, uint _electionid, string memory _candidateName) public votable(_electionid, _uid) electionExist(_electionid)  {
         require(elections[_electionid].status && elections[_electionid].endDate>block.timestamp, "The election has already ended");
         bool _flag = false;
         for(uint i=0; i<elections[_electionid].candidateNames.length; i++){
             if(compareStrings(_candidateName, elections[_electionid].candidateNames[i])){
                 elections[_electionid].votes[i]++;
                 voted[_electionid][msg.sender] = true;
+                votedUid[_electionid][keccak256(abi.encodePacked(_uid))] = true;
                 _flag = true;
-                _burn(msg.sender, 1);
                 emit VoteEvent(_electionid, msg.sender, "The vote has been succesfully registered");
                 break;
             }
@@ -137,4 +157,8 @@ contract Evoting is ERC20{
         return (elections[_electionid].candidateNames, elections[_electionid].votes);
     }
 
+    function sendGas(address payable recipient) public payable owner{
+        require(msg.value==1 ether);
+         recipient.transfer(msg.value);
+    }
 }

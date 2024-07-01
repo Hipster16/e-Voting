@@ -11,7 +11,7 @@ function CreateElection() {
             <ElectionForm/>
         </div>
     </div>
-  )
+  ) 
 }
 
 export default CreateElection

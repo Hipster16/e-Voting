@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,26 +20,32 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import { ethers, getBigInt } from "ethers";
+import Evoting from "@/artifacts/contracts/Evoting.sol/Evoting.json";
 import { Check } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import StudentTable, { columns, dummyData } from "./StudentTable";
+import StudentTable, { columns } from "./StudentTable";
 import { formSchema } from "@/Models/schema/electionFormSchema";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { useRouter } from "next/navigation";
 import FormProgress from "./FormProgress";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
+import db from "@/firebase/firestore";
+import { student } from "@/Models/types/student";
+import { useMetaMask } from "../hooks/useMetamask";
+import { createNewWallet } from "../utils";
 
 export default function ElectionForm() {
   const labelStyle = "text-black text-xl font-medium";
   const inputStyle = "bg-blue-100/35 p-5 text-black rounded-2xl";
-
   const router = useRouter();
-
-  const [SelectedParticipants, setSelectedParticipants] = useState<any[]>([]);
-  const [SelectedCandidates, setSelectedCandidates] = useState<any[]>([]);
+  const [SelectedParticipants, setSelectedParticipants] = useState<student[]>([]);
+  const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
+  const [submitting, setsubmitting] = useState(false);
+  const [SelectedCandidates, setSelectedCandidates] = useState<student[]>([]);
   const [CandidateErrorMsg, setCandidateErrorMsg] = useState("");
   const [ParticipantErrorMsg, setPariticipantErrorMsg] = useState("");
-
+  const [Documents, setDocuments] = useState<student[]>([]);
   const [Page, setPage] = useState<number>(1);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,16 +90,73 @@ export default function ElectionForm() {
       shouldFocus: true,
     });
     if (!output) return;
-    //logic to initializing an election comes here.
-    console.log(values);
-    console.log(SelectedCandidates);
-    console.log(SelectedParticipants);
-    form.reset();
-    router.push("/")
+    setsubmitting(true);
+    try {
+      const wallets = createNewWallet(SelectedParticipants.length);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
+      let contract = new ethers.Contract(contractAddress, Evoting.abi, signer)
+      let candidates = SelectedCandidates.map((candidate) => {
+        return candidate.email;
+      })
+      let uids = SelectedParticipants.map((value) => {
+        return value.uid;
+      })
+      let transaction = await contract.createElection(
+        values.ElectionName,
+        values.ElectionDescription,
+        getBigInt("111111111111111111111111"),
+        candidates,
+        wallets.address,
+        uids,
+        {
+          value:ethers.parseUnits((10*SelectedParticipants.length).toString(), "finney")
+        }
+      )
+      await transaction.wait()
+      console.log(transaction);
+      await addDoc(collection(db, "Elections"), {
+        id: 1,
+        name: values.ElectionName,
+        privateKeys: wallets.privateKey,
+        participants: SelectedParticipants.map((participant: student) => {
+          return {
+            voted: false,
+            email: participant.email,
+          };
+        }),
+      });
+      console.log(values);
+      console.log(SelectedCandidates);
+      console.log(SelectedParticipants);
+      form.reset();
+      setsubmitting(false);
+      router.push("/admin/dashboard");
+    } catch (err) {
+      setsubmitting(false);
+      console.log(err);
+    }
   }
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "Users"), (snapshot) => {
+      setDocuments(
+        snapshot.docs.map((doc) => {
+          return {
+            id: doc.data().id,
+            email: doc.data().email,
+            clgId: doc.data().clgId,
+            uid: doc.id
+          };
+        })
+      );
+    } );
+    return unsub;
+  }, [wallet]);
   return (
     <div>
-      <FormProgress page={Page}/>
+      <FormProgress page={Page} />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -106,7 +169,9 @@ export default function ElectionForm() {
                 name="ElectionName"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className={labelStyle}>Election Name<span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className={labelStyle}>
+                      Election Name<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <input
                         placeholder="Enter the election name"
@@ -123,7 +188,9 @@ export default function ElectionForm() {
                 name="ElectionDescription"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className={labelStyle}>Election Description</FormLabel>
+                    <FormLabel className={labelStyle}>
+                      Election Description
+                    </FormLabel>
                     <FormControl>
                       <textarea
                         placeholder="Enter the election Description"
@@ -140,7 +207,9 @@ export default function ElectionForm() {
                 name="EndDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className={labelStyle}>End Date<span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className={labelStyle}>
+                      End Date<span className="text-red-500">*</span>
+                    </FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -172,24 +241,24 @@ export default function ElectionForm() {
               />
             </>
           )}
-            <div className={`${Page == 2 ? 'block' : 'hidden'}`}>
-              <p className={labelStyle}>Select the Candidates</p>
-              <StudentTable
-                data={dummyData}
-                columns={columns}
-                onRowSelected={(rows: any) => setSelectedCandidates(rows)}
-                Errormsg = {CandidateErrorMsg}
-              />
-            </div>
-          <div className={`${Page == 3 ? 'block' : 'hidden'}`}>
-              <p className={labelStyle}>Select the Participants</p>
-              <StudentTable
-                data={dummyData}
-                columns={columns}
-                onRowSelected={(rows: any) => setSelectedParticipants(rows)}
-                Errormsg = {ParticipantErrorMsg}
-              />
-            </div>
+          <div className={`${Page == 2 ? "block" : "hidden"}`}>
+            <p className={labelStyle}>Select the Candidates</p>
+            <StudentTable
+              data={Documents}
+              columns={columns}
+              onRowSelected={(rows: any) => setSelectedCandidates(rows)}
+              Errormsg={CandidateErrorMsg}
+            />
+          </div>
+          <div className={`${Page == 3 ? "block" : "hidden"}`}>
+            <p className={labelStyle}>Select the Participants</p>
+            <StudentTable
+              data={Documents}
+              columns={columns}
+              onRowSelected={(rows: any) => setSelectedParticipants(rows)}
+              Errormsg={ParticipantErrorMsg}
+            />
+          </div>
           {Page == 4 && (
             <FormField
               control={form.control}
@@ -197,7 +266,9 @@ export default function ElectionForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel className={`${labelStyle} text-md`}>
-                    <h1 className="texl-3xl font-semibold my-2">Acknoledgement<span className="text-red-500">*</span></h1>
+                    <h1 className="texl-3xl font-semibold my-2">
+                      Acknoledgement<span className="text-red-500">*</span>
+                    </h1>
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                     Pariatur quia ea maiores neque cumque iste in saepe! Hic
                     dolorum, beatae, dolor exercitationem pariatur, sed autem
@@ -211,7 +282,11 @@ export default function ElectionForm() {
                       className={`${
                         field.value ? "bg-green-400" : "bg-transparent"
                       } border-black border-1 w-[30px] h-[30px] rounded-md`}
-                    >{field.value && <Check color="#ffffff" className="m-auto"/>}</Checkbox>
+                    >
+                      {field.value && (
+                        <Check color="#ffffff" className="m-auto" />
+                      )}
+                    </Checkbox>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -229,14 +304,16 @@ export default function ElectionForm() {
             {Page == 4 ? (
               <button
                 type="submit"
+                disabled={submitting}
                 className="h-[50px] w-full bg-green-600 text-white text-md font-semibold mt-7 rounded-full hover:bg-black"
               >
                 Submit
               </button>
             ) : (
               <button
-                className="w-full h-[50px]  text-black border-black border-2 text-md font-semibold py-3 mt-7 rounded-full hover:bg-black hover:text-white "
+                className="w-full h-[50px]  text-black border-black border-2 text-md font-semibold py-3 mt-7 rounded-full hover:bg-black hover:text-white"
                 onClick={handleNext}
+                disabled={submitting}
                 type="button"
               >
                 Next
