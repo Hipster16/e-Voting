@@ -10,15 +10,18 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMetaMask } from "../hooks/useMetamask";
-import { formatAddress } from "../utils";
+import { useRouter } from "next/navigation";
+
 
 export default function Navbar() {
   const [user, setuser] = useState("none");
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
+  const router = useRouter()
   var poppup;
 
   const handleLogout = () => {
     signOut(auth.authState)
+    router.push("/")
   }
 
   if (user == "student") {
