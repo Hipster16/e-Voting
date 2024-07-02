@@ -55,9 +55,10 @@ export default function ElectionGrid() {
         <p className="p-20 text-center text-2xl">No Elections found</p>
       ) : (
         <div className="w-full h-full mt-10 grid grid-cols-[repeat(auto-fill,375px)] gap-[50px] justify-center">
-          {data.filter(handleFilter).map((election) => {
+          {data.filter(handleFilter).map((election, index) => {
             return (
               <AdminCard
+              key={index}
                 eletionid={election.id}
                 name={election.electionName}
                 desc={election.electionDesc}
