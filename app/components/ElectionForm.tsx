@@ -110,10 +110,23 @@ export default function ElectionForm() {
         }
       )
       await transaction.wait()
+      transaction = await contract.getAllElection()
+      let allElection = transaction.map((el: any) => {
+        return Number(el[0])
+      })
+      allElection.pop()
+      const electionid = allElection.pop()
       console.log(transaction);
       await addDoc(collection(db, "Elections"), {
+        id: electionid,
         name: values.ElectionName,
         privateKeys: wallets.privateKey,
+        Candidates: SelectedCandidates.map((c: student) => {
+          return {
+            email: c.email,
+            clgId: c.clgId
+          }
+        }),
         participants: SelectedParticipants.map((participant: student) => {
           return {
             voted: false,
