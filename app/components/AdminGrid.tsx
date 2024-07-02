@@ -2,12 +2,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import AdminCard from "./AdminCard";
 import { connectContract } from "../utils";
-
-type electionData = {
-  electionName: string;
-  electionDesc: string;
-  id: number
-}
+import { electionData } from "@/Models/types/electionCard";
 
 export default function ElectionGrid() {
   const [dataFetched, setDataFetched] = useState(false);
@@ -15,7 +10,7 @@ export default function ElectionGrid() {
   const getAll = async () => {
     const contract = await connectContract();
     const transaction = await contract.getAllElection()
-    let elections =transaction.map((election:any, index:number) => {
+    let elections =transaction.map((election:any) => {
       return {
         electionName: election[1],
         electionDesc: election[2],

@@ -28,7 +28,10 @@ export default function ElectionCard(props: ElectionCardProps) {
   const checkStatus = async () => {
     try {
       const contract = await connectContract();
-      await contract.getResults(1);
+
+      await contract.getResults(
+        getBigInt(props.eletionid.toString())
+      );
       setDisabled(true);
     } catch (err) {
       setDisabled(false);
