@@ -33,6 +33,8 @@ import {
 import db from "@/firebase/firestore";
 import { useMetaMask } from "@/app/hooks/useMetamask";
 import Image from "next/image";
+import { connectContract } from "@/app/utils";
+import { getBigInt } from "ethers";
 
 function ElectionInfo({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -151,8 +153,17 @@ function Row(props: {
   id: string;
   privateKey: string;
 }) {
+  const router = useRouter()
   async function handleVote() {
     try {
+      const contract = await connectContract()
+      let transaction = await contract.vote(
+        props.user.uid,
+        getBigInt(props.id),
+        props.email
+      )
+      await transaction.wait();
+      console.log(transaction)
       const q = query(
         collection(db, "Elections"),
         where("elid", "==", props.id),
@@ -175,6 +186,7 @@ function Row(props: {
         participants: p,
         privateKeys: k,
       });
+      router.push("/student/dashboard")
     } catch (e) {
       console.log(e);
     }
