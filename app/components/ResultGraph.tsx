@@ -90,10 +90,6 @@ export default function ResultGraph(props: { id: string }) {
         const q = query(
           collection(db, "Elections"),
           where("elid", "==", props.id),
-          where("participants", "array-contains", {
-            email: userData.email,
-            voted: true,
-          })
         );
         const doc = await getDocs(q);
         if (doc.docs.length == 0 || doc.docs.length > 1) {
@@ -125,7 +121,7 @@ export default function ResultGraph(props: { id: string }) {
   } else {
     return (
       <>
-        <h2 className="text-2xl font-bold">Candidate 3 Wins 🎉🎉</h2>
+        <h2 className="text-2xl font-bold">{winner}</h2>
         <div className="w-[900px] h-[500px] bg-white p-5">
           <h1 className="text-black text-xl text-center font-semibold">
             Vote distibution
