@@ -76,7 +76,7 @@ function ElectionInfo({ params }: { params: { id: string } }) {
       }
     });
     return unsubscribe;
-  }, []);
+  },[]);
 
   // useEffect(() => {
   //   if (user == null) {

@@ -115,11 +115,12 @@ export default function ElectionForm() {
         return Number(el[0])
       })
       allElection.pop()
-      const electionid = allElection.pop()
+      const electionid:number = allElection.pop()
       console.log(transaction);
       await addDoc(collection(db, "Elections"), {
-        id: electionid,
+        elid: electionid.toString(),
         name: values.ElectionName,
+        desc: values.ElectionDescription,
         privateKeys: wallets.privateKey,
         Candidates: SelectedCandidates.map((c: student) => {
           return {
