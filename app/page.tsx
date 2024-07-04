@@ -10,10 +10,10 @@ export default function Home() {
           <div className="flex flex-col gap-10 items-center text-center mt-20">
             <h1 className="text-8xl w-[70%] font-bold">Vote Without Rigging</h1>
             <p className="text-xl  w-[50%]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt
-              et veritatis autem ipsa, a consectetur enim molestiae nostrum
-              deserunt corporis suscipit, esse atque maxime quod voluptatibus
-              quas vitae unde cumque.
+              Experience secure and transparent online voting with eVoting,
+              ensuring your vote is counted without any risk of tampering. Join
+              our platform to participate in fair elections and make your voice
+              heard with confidence.
             </p>
             {<LoginButtons />}
           </div>

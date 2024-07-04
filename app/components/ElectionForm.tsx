@@ -38,7 +38,9 @@ export default function ElectionForm() {
   const labelStyle = "text-black text-xl font-medium";
   const inputStyle = "bg-blue-100/35 p-5 text-black rounded-2xl";
   const router = useRouter();
-  const [SelectedParticipants, setSelectedParticipants] = useState<student[]>([]);
+  const [SelectedParticipants, setSelectedParticipants] = useState<student[]>(
+    []
+  );
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
   const [submitting, setsubmitting] = useState(false);
   const [SelectedCandidates, setSelectedCandidates] = useState<student[]>([]);
@@ -92,13 +94,13 @@ export default function ElectionForm() {
     setsubmitting(true);
     try {
       const wallets = createNewWallet(SelectedParticipants.length);
-      const contract = await connectContract()
+      const contract = await connectContract();
       let candidates = SelectedCandidates.map((candidate) => {
         return candidate.email;
-      })
+      });
       let uids = SelectedParticipants.map((value) => {
         return value.uid;
-      })
+      });
       let transaction = await contract.createElection(
         values.ElectionName,
         values.ElectionDescription,
@@ -106,16 +108,19 @@ export default function ElectionForm() {
         wallets.address,
         uids,
         {
-          value:ethers.parseUnits((10*SelectedParticipants.length).toString(), "finney")
+          value: ethers.parseUnits(
+            (10 * SelectedParticipants.length).toString(),
+            "finney"
+          ),
         }
-      )
-      await transaction.wait()
-      transaction = await contract.getAllElection()
+      );
+      await transaction.wait();
+      transaction = await contract.getAllElection();
       let allElection = transaction.map((el: any) => {
-        return Number(el[0])
-      })
-      allElection.pop()
-      const electionid:number = allElection.pop()
+        return Number(el[0]);
+      });
+      allElection.pop();
+      const electionid: number = allElection.pop();
       console.log(transaction);
       await addDoc(collection(db, "Elections"), {
         elid: electionid.toString(),
@@ -125,8 +130,8 @@ export default function ElectionForm() {
         Candidates: SelectedCandidates.map((c: student) => {
           return {
             email: c.email,
-            clgId: c.clgId
-          }
+            clgId: c.clgId,
+          };
         }),
         participants: SelectedParticipants.map((participant: student) => {
           return {
@@ -152,11 +157,11 @@ export default function ElectionForm() {
             id: doc.data().id,
             email: doc.data().email,
             clgId: doc.data().clgId,
-            uid: doc.id
+            uid: doc.id,
           };
         })
       );
-    } );
+    });
     return unsub;
   }, [wallet]);
   return (
@@ -274,10 +279,10 @@ export default function ElectionForm() {
                     <h1 className="texl-3xl font-semibold my-2">
                       Acknoledgement<span className="text-red-500">*</span>
                     </h1>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                    Pariatur quia ea maiores neque cumque iste in saepe! Hic
-                    dolorum, beatae, dolor exercitationem pariatur, sed autem
-                    delectus quas sunt consequuntur iure!
+                    By acknowledging, you confirm your understanding and
+                    agreement with the terms and conditions of the election
+                    process. Your participation ensures transparency and
+                    integrity, making every vote count.
                   </FormLabel>
                   <FormControl>
                     <Checkbox
