@@ -1,4 +1,3 @@
-import Navbar from "@/app/components/Navbar";
 import LoginButtons from "@/app/components/LoginButtons";
 
 export default function Home() {

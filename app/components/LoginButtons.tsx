@@ -50,7 +50,7 @@ export default function LoginButtons() {
               className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
               onClick={handleStudentLogin}
             >
-              Student
+              Voter
             </button>
           </div>
         )}
