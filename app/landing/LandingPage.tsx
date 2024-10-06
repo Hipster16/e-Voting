@@ -1,4 +1,4 @@
-import { LandingPageNavBar } from '../components/LandingPageNavBar'
+import { LandingPageNavBar } from './LandingPageNavBar'
 import { Hero } from '../components/Hero'
 import { Footer } from '../components/Footer'
 
