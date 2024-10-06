@@ -1,6 +1,6 @@
 export function Footer(){
     return (
-        <footer className="bg-gray-900 py-12 border-t border-gray-800">
+        <footer className="bg-gray-900 py-12 border-t border-gray-800" id = "footer">
             <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-4 gap-8">
                 <div>

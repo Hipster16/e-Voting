@@ -1,6 +1,7 @@
-import { LandingPageNavBar } from './LandingPageNavBar'
-import { Hero } from '../components/Hero'
-import { Footer } from '../components/Footer'
+"use client";
+import { LandingPageNavBar } from './NavBar/LandingPageNavBar'
+import { Hero } from './Hero/Hero'
+import { Footer } from './Footer/Footer'
 
 export function LandingPage() {
   return (
