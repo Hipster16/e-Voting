@@ -9,7 +9,7 @@ export default function Home() {
           <div className="text-2xl font-bold text-white">
             e<span className="text-blue-400">Voting</span>
           </div>
-          <div className="bg-white/20 backdrop-blur-md py-2 px-4 rounded-full text-white">
+          <div className="py-2 px-4 rounded-full text-white">
             <LoginButtons />
           </div>
         </nav>
