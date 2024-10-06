@@ -4,7 +4,7 @@ export function LandingPageNavBar(){
   const router = useRouter()
 
   const handleButton = () => {
-    router.push("/home/Home");
+    router.push("/home");
   };
   return (
       <header className="flex justify-between items-center p-4 border-b border-gray-800">
