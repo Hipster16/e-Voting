@@ -1,4 +1,4 @@
-import Navbar from "@/app/components/Navbar";
+/*import Navbar from "@/app/components/Navbar";
 import LoginButtons from "@/app/components/LoginButtons";
 
 export default function Home() {
@@ -21,4 +21,11 @@ export default function Home() {
       </div>
     </main>
   );
+}*/
+
+import { LandingPage } from "../app/landing/LandingPage"
+export default function Home(){
+  return (
+    <LandingPage />
+  )
 }

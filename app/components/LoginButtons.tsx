@@ -1,13 +1,12 @@
-"use client";
+'use client'
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import auth from "@/firebase/auth";
 
-
 export default function LoginButtons() {
   const [visible, setVisible] = useState(false);
-  const [logggedIn, setLogggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(true);
   const router = useRouter();
 
   const handleClick = () => {
@@ -23,38 +22,35 @@ export default function LoginButtons() {
   };
 
   useEffect(() => {
-    const unsbscribe = onAuthStateChanged(auth.authState, (user) => {
-      if (user) {
-        setLogggedIn(true);
-      } else {
-        setLogggedIn(false);
-      }
+    const unsubscribe = onAuthStateChanged(auth.authState, (user) => {
+      setLoggedIn(!!user);
     });
-    return unsbscribe;
-  });
-  if (!logggedIn) {
+    return unsubscribe;
+  }, []);
+
+  if (!loggedIn) {
     return (
-      <div className="w-[30%]">
+      <div className="w-full max-w-md mx-auto ">
         {!visible ? (
           <button
-            className="bg-blue-600 text-xl font-semibold py-4 px-10 rounded-full hover:bg-white hover:text-blue-600"
+            className="w-full bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             onClick={handleClick}
           >
             Login
           </button>
         ) : (
-          <div className="w-full flex justify-between">
+          <div className="w-full flex flex-col sm:flex-row justify-between gap-4">
             <button
-              className="bg-blue-600 text-xl font-semibold py-4 px-10 rounded-full hover:bg-white hover:text-blue-600"
+              className="flex-1 bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               onClick={handleAdminLogin}
             >
               Admin
             </button>
             <button
-              className="bg-blue-600 text-xl font-semibold py-4 px-10 rounded-full hover:bg-white hover:text-blue-600"
+              className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
               onClick={handleStudentLogin}
             >
-              student
+              Voter
             </button>
           </div>
         )}
