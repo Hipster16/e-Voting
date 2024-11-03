@@ -23,9 +23,7 @@ export default function Home() {
   );
 }*/
 
-import { LandingPage } from "../app/landing/LandingPage"
-export default function Home(){
-  return (
-    <LandingPage />
-  )
+import { LandingPage } from "../app/landing/LandingPage";
+export default function Home() {
+  return <LandingPage />;
 }

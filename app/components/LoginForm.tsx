@@ -32,22 +32,22 @@ export default function LoginForm() {
     signInWithEmailAndPassword(auth.authState, values.email, values.password)
       .then((userCredentials) => {
         console.log(userCredentials.user);
-        router.push("/student/dashboard")
+        router.push("/student/dashboard");
       })
       .catch((error) => {
-        setErrormsg("Invalid Username or password")
+        setErrormsg("Invalid Username or password");
       });
   }
 
-  useEffect(() => {
-    if(wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
-      router.push("/")
-    }
-    auth.getUser();
-    if (auth.authState.currentUser) {
-      router.push("/student/dashboard");
-    }
-  });
+  // useEffect(() => {
+  //   if(wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
+  //     router.push("/")
+  //   }
+  //   auth.getUser();
+  //   if (auth.authState.currentUser) {
+  //     router.push("/student/dashboard");
+  //   }
+  // });
 
   return (
     <Form {...form}>

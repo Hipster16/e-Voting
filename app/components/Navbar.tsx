@@ -12,99 +12,97 @@ import { useEffect, useState } from "react";
 import { useMetaMask } from "../hooks/useMetamask";
 import { useRouter } from "next/navigation";
 
-
 export default function Navbar() {
   const [user, setuser] = useState("none");
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
-  const router = useRouter()
-  var poppup;
+  const router = useRouter();
+  let poppup;
 
   const handleLogout = () => {
-    signOut(auth.authState)
-    router.push("/")
-  }
+    signOut(auth.authState);
+    router.push("/");
+  };
 
-  if (user == "student") {
+  if (user === "student") {
     poppup = (
       <Popover>
         <PopoverTrigger>
-          <div className="border-white border-2 text-black py-4 px-10 rounded-full bg-white cursor-pointer">
-            hello <span className="text-blue-600 font-semibold">{auth.authState.currentUser?.email}</span> 
+          <div className="text-gray-400 hover:text-white cursor-pointer transition-colors">
+            hello{" "}
+            <span className="text-blue-600 font-semibold">
+              {auth.authState.currentUser?.email}
+            </span>
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-60 h-full bg-white border-2 border-slate-100/45 text-white m-5 ">
-          <div className="flex flex-col justify-between h-full gap-6">
-            <button
-              className="bg-blue-600 text-xl text-center font-semibold py-4 px-10 rounded-full hover:bg-black"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </div>
+        <PopoverContent className="w-48 bg-gray-800 border border-slate-700 rounded-lg mt-2">
+          <button
+            className="w-full text-white text-center py-2 px-4 hover:bg-blue-600 rounded-lg transition-colors"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </PopoverContent>
       </Popover>
-    )
-  }
-  else if(user == "admin") {
+    );
+  } else if (user === "admin") {
     poppup = (
-      <div className="border-white border-2 text-black py-4 px-10 rounded-full bg-white">
-            hello <span className="text-blue-600 font-semibold">admin</span> 
+      <div className="text-gray-400 hover:text-white transition-colors">
+        hello <span className="text-blue-600 font-semibold">admin</span>
       </div>
-    )
+    );
+  } else {
+    poppup = (
+      <Popover>
+        <PopoverTrigger>
+          <div className="text-gray-400 hover:text-white cursor-pointer transition-colors">
+            Login
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-48 bg-gray-800 border border-slate-700 rounded-lg mt-2 p-2 space-y-2">
+          <Link
+            href={"/admin/login"}
+            className="block text-center text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Admin
+          </Link>
+          <Link
+            href={"/student/login"}
+            className="block text-center text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Student
+          </Link>
+        </PopoverContent>
+      </Popover>
+    );
   }
-    else{
-      poppup = (
-        <Popover>
-          <PopoverTrigger>
-            <div className="bg-blue-600 font-semibold py-4 px-10 rounded-full hover:bg-white hover:text-blue-600 cursor-pointer">
-              Login
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className="w-60 h-full bg-white border-2 border-slate-100/45 text-white m-5 ">
-            <div className="flex flex-col justify-between h-full gap-6">
-              <Link
-                href={"/admin/login"}
-                className="bg-blue-600 text-xl text-center font-semibold py-4 px-10 rounded-full hover:bg-black"
-              >
-                Admin
-              </Link>
-              <Link
-                href={"/student/login"}
-                className="bg-blue-600 text-xl text-center font-semibold py-4 px-10 rounded-full hover:bg-black"
-              >
-                student
-              </Link>
-            </div>
-          </PopoverContent>
-        </Popover>
-      )
-    }
-
 
   useEffect(() => {
-    const unsbscribe = onAuthStateChanged(auth.authState, (user) => {
+    const unsubscribe = onAuthStateChanged(auth.authState, (user) => {
       if (user) {
-        setuser("student")
-      }
-       else {
-        if(wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
-          setuser("admin")
-        }
-        else{
-        setuser("none")
+        setuser("student");
+      } else {
+        if (
+          wallet.accounts[0] ===
+          process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
+        ) {
+          setuser("admin");
+        } else {
+          setuser("none");
         }
       }
     });
-    return unsbscribe
-  });
-   
+    return unsubscribe;
+  }, [wallet]);
 
   return (
-    <div className="w-full h-[100px] bg-slate-100/15 text-white flex justify-between items-center p-10 rounded-full border-1">
-      <h1 className="font-semibold text-xl" onClick={() => router.push("/")}>
+    <div className="w-full flex justify-between items-center px-4 py-3 mt-6 bg-gradient-to-r from-[#12141d] to-[#0f1117] rounded-xl border-b border-gray-700 shadow-lg">
+      <h1
+        className="text-2xl font-semibold text-white cursor-pointer"
+        onClick={() => router.push("/")}
+      >
         <span className="text-blue-600">e</span>Voting
       </h1>
-      {poppup}
+      <div>{poppup}</div>
     </div>
   );
 }

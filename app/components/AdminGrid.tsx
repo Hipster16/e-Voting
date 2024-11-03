@@ -6,21 +6,21 @@ import { electionData } from "@/Models/types/electionCard";
 
 export default function ElectionGrid() {
   const [dataFetched, setDataFetched] = useState(false);
-  const [data, setdata] = useState<electionData[]>([])
+  const [data, setdata] = useState<electionData[]>([]);
   const getAll = async () => {
     const contract = await connectContract();
-    const transaction = await contract.getAllElection()
-    let elections =transaction.map((election:any) => {
+    const transaction = await contract.getAllElection();
+    let elections = transaction.map((election: any) => {
       return {
         electionName: election[1],
         electionDesc: election[2],
-        id: Number(election[0])
+        id: Number(election[0]),
       };
-    })
-    elections.pop()
+    });
+    elections.pop();
     setdata(elections);
-    setDataFetched(true)
-  }
+    setDataFetched(true);
+  };
   const [Search, setSearch] = useState("");
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -28,8 +28,8 @@ export default function ElectionGrid() {
   };
 
   const handleFilter = (elem: electionData) => {
-    if(!Search) {
-      return elem
+    if (!Search) {
+      return elem;
     }
     if (Search && elem.electionName.includes(Search)) {
       return elem;
@@ -39,17 +39,20 @@ export default function ElectionGrid() {
   };
 
   useEffect(() => {
-    if(!dataFetched) getAll();
-  })
+    if (!dataFetched) getAll();
+  });
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <input
-        type="search"
-        placeholder="Search"
-        className="w-[500px] bg-slate-50/25 px-4 py-4 text-black rounded-full focus:bg-white"
-        onChange={handleSearch}
-      />
+      <div className="w-[500px] relative">
+        <input
+          type="search"
+          placeholder="Search"
+          className="w-full bg-slate-50/25 px-4 py-4 text-black rounded-full focus:bg-white shadow-lg transition-all duration-200 ease-in-out"
+          onChange={handleSearch}
+        />
+        <div className="absolute top-0 left-0 w-full h-full border-2 border-blue-500 rounded-full pointer-events-none animate-pulse"></div>
+      </div>
 
       {data.filter(handleFilter).length == 0 ? (
         <p className="p-20 text-center text-2xl">No Elections found</p>
@@ -58,7 +61,7 @@ export default function ElectionGrid() {
           {data.filter(handleFilter).map((election, index) => {
             return (
               <AdminCard
-              key={index}
+                key={index}
                 eletionid={election.id}
                 name={election.electionName}
                 desc={election.electionDesc}
