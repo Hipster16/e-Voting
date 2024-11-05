@@ -8,7 +8,12 @@ export function LandingPageNavBar(){
   };
   return (
       <header className="flex justify-between items-center p-4 border-b border-gray-800">
-        <div className="text-2xl font-bold">eVote</div>
+        <div className="text-2xl font-bold">
+            e
+            <span className="text-blue-400">
+              Voting
+            </span>
+          </div>
         <nav className="hidden md:flex space-x-4">
         <a href="#" className="text-gray-400 hover:text-white">
           Home
