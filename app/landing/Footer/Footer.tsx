@@ -26,7 +26,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <h4 className="text-lg font-semibold mb-4">About Us</h4>
-            <p className="text-gray-400">blah blah</p>
+            <p className="text-gray-400">We are dedicated to revolutionizing digital voting through blockchain technology, ensuring secure, transparent, and accessible electoral processes for everyone.</p>
           </div>
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
