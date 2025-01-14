@@ -46,9 +46,11 @@ export async function POST(req: NextRequest) {
         const offchainAttestation = await offchain.signOffchainAttestation({
             recipient: recipient_wallet_id,
             expirationTime: NO_EXPIRATION,
+            // @ts-ignore
             time: Math.floor(Date.now() / 1000), // Current time
             revocable: true,
             version: 1,
+            // @ts-ignore
             nonce: 0,
             schema: "0x6fbabf02fa268b7b48f5febef2398a2635193efa753c47ecbd33cb9ee58b9922",
             refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',
