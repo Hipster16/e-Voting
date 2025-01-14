@@ -5,8 +5,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import auth from "@/firebase/auth";
-import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMetaMask } from "../hooks/useMetamask";
@@ -14,12 +12,12 @@ import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [user, setuser] = useState("none");
-  const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
+  const { wallet, disconnectMetaMask } = useMetaMask();
   const router = useRouter();
   let poppup;
 
   const handleLogout = () => {
-    signOut(auth.authState);
+    disconnectMetaMask()
     router.push("/");
   };
 
@@ -30,7 +28,7 @@ export default function Navbar() {
           <div className="text-gray-400 hover:text-white cursor-pointer transition-colors">
             hello{" "}
             <span className="text-blue-600 font-semibold">
-              {auth.authState.currentUser?.email}
+              {wallet.userName}
             </span>
           </div>
         </PopoverTrigger>
@@ -46,9 +44,21 @@ export default function Navbar() {
     );
   } else if (user === "admin") {
     poppup = (
-      <div className="text-gray-400 hover:text-white transition-colors">
-        hello <span className="text-blue-600 font-semibold">admin</span>
-      </div>
+      <Popover>
+        <PopoverTrigger>
+          <div className="text-gray-400 hover:text-white transition-colors">
+            hello <span className="text-blue-600 font-semibold">admin</span>
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-48 bg-gray-800 border border-slate-700 rounded-lg mt-2">
+          <button
+            className="w-full text-white text-center py-2 px-4 hover:bg-blue-600 rounded-lg transition-colors"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </PopoverContent>
+      </Popover>
     );
   } else {
     poppup = (
@@ -77,21 +87,15 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth.authState, (user) => {
-      if (user) {
-        setuser("student");
-      } else {
-        if (
-          wallet.accounts[0] ===
-          process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
-        ) {
-          setuser("admin");
-        } else {
-          setuser("none");
-        }
-      }
-    });
-    return unsubscribe;
+    if (wallet.accounts[0] && wallet.userName) {
+      setuser("student")
+    }
+    else if (wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
+      setuser("admin")
+    }
+    else {
+      setuser("none")
+    }
   }, [wallet]);
 
   return (

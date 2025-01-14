@@ -22,9 +22,9 @@ export const formatAddress = (addr: string, num: number) => {
 };
 
 export const createNewWallet = (num: number) => {
-  let accounts: accountType = { address: [], privateKey:[] };
+  let accounts: accountType = { address: [], privateKey: [] };
   const web3 = new Web3('https://polygon-amoy-bor-rpc.publicnode.com');
-  for(let i=0; i<num; i++){
+  for (let i = 0; i < num; i++) {
     const account = web3.eth.accounts.create();
     accounts.address.push(account.address);
     accounts.privateKey.push(account.privateKey)
@@ -33,9 +33,9 @@ export const createNewWallet = (num: number) => {
 }
 
 export const connectContract = async () => {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
-      let contract = new ethers.Contract(contractAddress, Evoting.abi, signer)
-      return contract
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const signer = await provider.getSigner();
+  const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
+  let contract = new ethers.Contract(contractAddress, Evoting.abi, signer)
+  return contract
 }  

@@ -11,10 +11,12 @@ import {
 
 import detectEthereumProvider from "@metamask/detect-provider";
 import { formatBalance } from "@/app/utils";
+import { set } from "date-fns";
 
 interface WalletState {
     accounts: any[];
     balance: string;
+    userName: string | null;
     chainId: string;
 }
 
@@ -25,13 +27,16 @@ interface MetaMaskContextData {
     errorMessage: string;
     isConnecting: boolean;
     connectMetaMask: () => void;
+    setUser: (userName: string) => void;
     clearError: () => void;
+    disconnectMetaMask: () => void;
 }
 
 const disconnectedState: WalletState = {
     accounts: [],
     balance: "",
     chainId: "",
+    userName: null,
 };
 
 
@@ -70,7 +75,7 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
             method: "eth_chainId",
         });
 
-        setWallet({ accounts, balance, chainId });
+        setWallet({ accounts, balance, userName: null, chainId });
     }, []);
 
     const updateWalletAndAccounts = useCallback(
@@ -119,12 +124,34 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
                 method: "eth_requestAccounts",
             });
             clearError();
-            updateWallet(accounts);
         } catch (err: any) {
             setErrorMessage(err.message);
         }
         setIsConnecting(false);
     };
+
+    const setUser = (userName: string) => {
+        setWallet({ ...wallet, userName });
+    }
+
+    const disconnectMetaMask = async () => {
+        setIsConnecting(true);
+
+        try {
+            await window.ethereum.request({
+                method: "wallet_revokePermissions",
+                params: [{
+                    eth_accounts: {},
+                }],
+            });
+            clearError();
+            updateWallet([])
+            wallet.userName = null
+        } catch (err: any) {
+            setErrorMessage(err.message);
+        }
+        setIsConnecting(false);
+    }
 
     return (
         <MetaMaskContext.Provider
@@ -134,8 +161,10 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
                 error: !!errorMessage,
                 errorMessage,
                 isConnecting,
+                setUser,
                 connectMetaMask,
                 clearError,
+                disconnectMetaMask
             }}
         >
             {children}

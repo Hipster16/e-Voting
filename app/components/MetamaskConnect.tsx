@@ -7,16 +7,16 @@ import { useRouter } from 'next/navigation';
 export default function MetamaskConnect() {
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
   const router = useRouter()
-  if(hasProvider && wallet.accounts.length > 0 ) {
-    if(wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()){
+  if (hasProvider && wallet.accounts.length > 0) {
+    if (wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
       console.log(wallet.accounts[0])
       router.push("/admin/dashboard");
     }
-    else{
+    else {
 
     }
   }
-  
+
   return (
     <>
       {!hasProvider && (
@@ -46,8 +46,8 @@ export default function MetamaskConnect() {
         </div>
       )}
       {hasProvider && wallet.accounts.length > 0 && (
-        <div className='bg-red-600 text-sm font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly'>
-          Signed in account is not admin... disconnect and reconnect
+        <div className='bg-blue-600 text-sm font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly'>
+          {`Connect from ${wallet.accounts[0].slice(0, 6).concat("...")}`}
         </div>
       )}
     </>

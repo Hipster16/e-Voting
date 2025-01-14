@@ -1,4 +1,5 @@
 import LoginForm from '@/app/components/LoginForm'
+import MetamaskConnect from '@/app/components/MetamaskConnect'
 import React from 'react'
 
 function StudentLogin() {
@@ -8,7 +9,7 @@ function StudentLogin() {
         <h1 className="text-3xl text-center text-black font-semibold">
           Login
         </h1>
-        <LoginForm/>
+        <LoginForm />
       </div>
     </div>
   )
