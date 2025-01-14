@@ -24,8 +24,7 @@ export default function AttestationForm() {
     const [loading, setLoading] = useState(false);
 
     const router = useRouter();
-    // const baseUrl = "http://localhost:3000/"
-    const baseUrl = "https://e-voting-flax.vercel.app/"
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 
     const form = useForm<z.infer<typeof AttestionSchema>>({
@@ -34,7 +33,7 @@ export default function AttestationForm() {
 
     async function onSubmit(values: z.infer<typeof AttestionSchema>) {
         setLoading(true)
-        const response = await fetch(`${baseUrl}api/sendAttestation`, {
+        const response = await fetch(`${baseUrl}/api/sendAttestation`, {
             headers: {
                 "Content-Type": "application/json",
             },
