@@ -4,6 +4,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import auth from "@/firebase/auth";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 export default function LoginButtons() {
   const [visible, setVisible] = useState(false);
   const [loggedIn, setLoggedIn] = useState(true);
@@ -19,6 +25,10 @@ export default function LoginButtons() {
 
   const handleStudentLogin = () => {
     router.push("/student/login");
+  };
+
+  const handleStudentSignin = () => {
+    router.push("/student/signin");
   };
 
   useEffect(() => {
@@ -46,12 +56,29 @@ export default function LoginButtons() {
             >
               Admin
             </button>
+            <Popover>
+              <PopoverTrigger>
+            <button
+              className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+            >
+              Voter
+            </button>
+            </PopoverTrigger>
+            <PopoverContent className="bg-slate-600 border-0 flex flex-col gap-2 max-w-[200px]">
+            <button
+              className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+              onClick={handleStudentSignin}
+            >
+              Register
+            </button>
             <button
               className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
               onClick={handleStudentLogin}
             >
-              Voter
+              Login
             </button>
+            </PopoverContent>
+            </Popover>
           </div>
         )}
       </div>

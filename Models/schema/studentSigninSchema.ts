@@ -5,7 +5,10 @@ export const StudentSigninSchema = z.object({
     .string({
       required_error: "This field must be filled.",
     })
-    .email("This is a not a valid email."),
+    .email("This is not a valid email.")
+    .refine((email) => email.endsWith("@mbcet.ac.in"), {
+      message: "Only emails from mbcet.ac.in are allowed.",
+    }),
 
   name: z.string({
     required_error: "This field must be filled.",

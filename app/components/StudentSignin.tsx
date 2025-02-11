@@ -15,7 +15,7 @@ import { buildPoseidon } from "circomlibjs"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMetaMask } from "../hooks/useMetamask";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import db from "@/firebase/firestore";
 export default function Signin() {
   const labelStyle = "text-black text-xl font-medium";
@@ -52,6 +52,13 @@ export default function Signin() {
 
   async function onSubmit(values: z.infer<typeof StudentSigninSchema>) {
     setLoading(true);
+    const q = query(collection(db, "Voters"), where("email", "==", values.email));
+    const doc = await getDocs(q)
+    if(!doc.empty) {
+        console.log("already user with same exist");
+        setLoading(false);
+        return;
+    }
     const _userhash = await doublePoseidonHash(values.name, values.passphrase)
     await addDoc(collection(db, "Voters"), {
         email: values.email,
@@ -148,7 +155,7 @@ export default function Signin() {
           type="submit"
           disabled={loading}
         >
-          Sign In
+          Register
         </button>
       </form>
       <p className="text-red-500 text-md w-full text-center">{errormsg}</p>
