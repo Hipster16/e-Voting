@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { buildPoseidon } from "circomlibjs";
+import { buildPoseidon } from "circomlibjs"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMetaMask } from "../hooks/useMetamask";

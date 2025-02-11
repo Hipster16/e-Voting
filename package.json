@@ -20,6 +20,7 @@
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-table": "^8.17.3",
+    "@types/circomlibjs": "^0.1.6",
     "@types/nodemailer": "^6.4.17",
     "circomlibjs": "^0.1.7",
     "class-variance-authority": "^0.7.0",
