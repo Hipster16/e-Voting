@@ -3,4 +3,5 @@ export type student = {
     email: string;
     clgId: string;
     uid: string
+    userhash: string
   };

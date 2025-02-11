@@ -92,54 +92,30 @@ export default function ElectionForm() {
     });
     if (!output) return;
     setsubmitting(true);
-    try {
-      const wallets = createNewWallet(SelectedParticipants.length);
+    try { 
       const contract = await connectContract();
-      let candidates = SelectedCandidates.map((candidate) => {
-        return candidate.email;
-      });
-      let uids = SelectedParticipants.map((value) => {
-        return value.uid;
-      });
-      let transaction = await contract.createElection(
+      const hashes = SelectedParticipants.map((value) =>{
+        return ethers.toBigInt(value.userhash)
+      })
+      const voters = SelectedParticipants.map((value) => {
+        return value.email
+      })
+      const candidates = SelectedCandidates.map((value) => {
+        return {
+          "name": value.email,
+          "id": value.clgId
+        }
+      })
+      let transaction = await contract.create_election(
         values.ElectionName,
         values.ElectionDescription,
         candidates,
-        wallets.address,
-        uids,
-        {
-          value: ethers.parseUnits(
-            (10 * SelectedParticipants.length).toString(),
-            "finney"
-          ),
-        }
-      );
+        SelectedParticipants.length,
+        voters,
+        hashes
+      )
       await transaction.wait();
-      transaction = await contract.getAllElection();
-      let allElection = transaction.map((el: any) => {
-        return Number(el[0]);
-      });
-      allElection.pop();
-      const electionid: number = allElection.pop();
-      console.log(transaction);
-      await addDoc(collection(db, "Elections"), {
-        elid: electionid.toString(),
-        name: values.ElectionName,
-        desc: values.ElectionDescription,
-        privateKeys: wallets.privateKey,
-        Candidates: SelectedCandidates.map((c: student) => {
-          return {
-            email: c.email,
-            clgId: c.clgId,
-          };
-        }),
-        participants: SelectedParticipants.map((participant: student) => {
-          return {
-            voted: false,
-            email: participant.email,
-          };
-        }),
-      });
+      console.log(transaction)
       form.reset();
       setsubmitting(false);
       router.push("/admin/dashboard");
@@ -150,7 +126,7 @@ export default function ElectionForm() {
   }
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "Users"), (snapshot) => {
+    const unsub = onSnapshot(collection(db, "Voters"), (snapshot) => {
       setDocuments(
         snapshot.docs.map((doc) => {
           return {
@@ -158,6 +134,7 @@ export default function ElectionForm() {
             email: doc.data().email,
             clgId: doc.data().clgId,
             uid: doc.id,
+            userhash: doc.data().userhash
           };
         })
       );
