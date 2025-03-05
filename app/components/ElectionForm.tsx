@@ -32,7 +32,7 @@ import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import db from "@/firebase/firestore";
 import { student } from "@/Models/types/student";
 import { useMetaMask } from "../hooks/useMetamask";
-import { connectContract, createNewWallet } from "../utils";
+import { connectContractFactory, createNewWallet } from "../utils";
 
 export default function ElectionForm() {
   const labelStyle = "text-black text-xl font-medium";
@@ -92,20 +92,20 @@ export default function ElectionForm() {
     });
     if (!output) return;
     setsubmitting(true);
-    try { 
-      const contract = await connectContract();
-      const hashes = SelectedParticipants.map((value) =>{
-        return ethers.toBigInt(value.userhash)
-      })
+    try {
+      const contract = await connectContractFactory();
+      const hashes = SelectedParticipants.map((value) => {
+        return ethers.toBigInt(value.userhash);
+      });
       const voters = SelectedParticipants.map((value) => {
-        return value.email
-      })
+        return value.email;
+      });
       const candidates = SelectedCandidates.map((value) => {
         return {
-          "name": value.email,
-          "id": value.clgId
-        }
-      })
+          name: value.email,
+          id: value.clgId,
+        };
+      });
       let transaction = await contract.create_election(
         values.ElectionName,
         values.ElectionDescription,
@@ -113,9 +113,9 @@ export default function ElectionForm() {
         SelectedParticipants.length,
         voters,
         hashes
-      )
+      );
       await transaction.wait();
-      console.log(transaction)
+      console.log(transaction);
       form.reset();
       setsubmitting(false);
       router.push("/admin/dashboard");
@@ -134,7 +134,7 @@ export default function ElectionForm() {
             email: doc.data().email,
             clgId: doc.data().clgId,
             uid: doc.id,
-            userhash: doc.data().userhash
+            userhash: doc.data().userhash,
           };
         })
       );

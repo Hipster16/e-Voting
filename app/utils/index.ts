@@ -6,6 +6,7 @@ type accountType = {
 import { ethers } from 'ethers';
 import { Web3 } from 'web3';
 import ElectionFactory from "@/artifacts/contracts/ElectionFactory/ElectionFactory.json"
+import ElectionContract from "@/artifacts/contracts/ElectionContract/ElectionContract.json"
 
 export const formatBalance = (rawBalance: string) => {
   const balance = (parseInt(rawBalance) / 1000000000000000000).toFixed(2);
@@ -32,10 +33,18 @@ export const createNewWallet = (num: number) => {
   return accounts
 }
 
-export const connectContract = async () => {
+export const connectContractFactory = async () => {
   const provider = new ethers.BrowserProvider(window.ethereum);
   const signer = await provider.getSigner();
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
   let contract = new ethers.Contract(contractAddress, ElectionFactory, signer)
   return contract
 }  
+
+export const connectContract = async (address: string) => {
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const signer = await provider.getSigner();
+  const contractAddress = address;
+  let contract = new ethers.Contract(contractAddress, ElectionContract, signer)
+  return contract
+} 

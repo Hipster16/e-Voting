@@ -33,7 +33,7 @@ import {
 import db from "@/firebase/firestore";
 import { useMetaMask } from "@/app/hooks/useMetamask";
 import Image from "next/image";
-import { connectContract } from "@/app/utils";
+import { connectContractFactory } from "@/app/utils";
 import { getBigInt } from "ethers";
 
 function ElectionInfo({ params }: { params: { id: string } }) {
@@ -76,7 +76,7 @@ function ElectionInfo({ params }: { params: { id: string } }) {
       }
     });
     return unsubscribe;
-  },[]);
+  }, []);
 
   // useEffect(() => {
   //   if (user == null) {
@@ -153,17 +153,17 @@ function Row(props: {
   id: string;
   privateKey: string;
 }) {
-  const router = useRouter()
+  const router = useRouter();
   async function handleVote() {
     try {
-      const contract = await connectContract()
+      const contract = await connectContractFactory();
       let transaction = await contract.vote(
         props.user.uid,
         getBigInt(props.id),
         props.email
-      )
+      );
       await transaction.wait();
-      console.log(transaction)
+      console.log(transaction);
       const q = query(
         collection(db, "Elections"),
         where("elid", "==", props.id),
@@ -186,7 +186,7 @@ function Row(props: {
         participants: p,
         privateKeys: k,
       });
-      router.push("/student/dashboard")
+      router.push("/student/dashboard");
     } catch (e) {
       console.log(e);
     }

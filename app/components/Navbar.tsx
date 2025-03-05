@@ -17,7 +17,7 @@ export default function Navbar() {
   let poppup;
 
   const handleLogout = () => {
-    disconnectMetaMask()
+    disconnectMetaMask();
     router.push("/");
   };
 
@@ -28,7 +28,7 @@ export default function Navbar() {
           <div className="text-gray-400 hover:text-white cursor-pointer transition-colors">
             hello{" "}
             <span className="text-blue-600 font-semibold">
-              {wallet.userName}
+              {wallet.accounts[0]}
             </span>
           </div>
         </PopoverTrigger>
@@ -87,14 +87,18 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    if (wallet.accounts[0] && wallet.userName) {
-      setuser("student")
-    }
-    else if (wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
-      setuser("admin")
-    }
-    else {
-      setuser("none")
+    if (
+      wallet.accounts[0] &&
+      wallet.accounts[0] != process.env.NEXT_PUBLIC_ADMIN_WALLET_ID
+    ) {
+      setuser("student");
+    } else if (
+      wallet.accounts[0] ==
+      process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
+    ) {
+      setuser("admin");
+    } else {
+      setuser("none");
     }
   }, [wallet]);
 

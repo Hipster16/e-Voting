@@ -1,9 +1,9 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
 import ElectionCard from "./ElectionCard";
-import Evoting from "@/artifacts/contracts/Evoting.sol/Evoting.json";
 import { ethers } from "ethers";
 import { electionData } from "@/Models/types/electionCard";
+import { connectContractFactory } from "../utils";
 
 export default function ElectionGrid() {
   const [provider, setProvider] = useState<ethers.Provider | null>(null);
@@ -25,30 +25,29 @@ export default function ElectionGrid() {
   };
 
   async function getElections() {
-    if (!provider) {
-      setProvider(
-        new ethers.JsonRpcProvider(
-          `https://polygon-amoy.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`
-        )
-      );
-    }
-    if (!provider) return;
+    // if (!provider) {
+    //   setProvider(
+    //     new ethers.JsonRpcProvider(
+    //       `https://polygon-amoy.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`
+    //     )
+    //   );
+    // }
+    // if (!provider) return;
 
-    const contract = new ethers.Contract(
-      process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
-      Evoting.abi,
-      provider
-    );
+    const contract = await connectContractFactory();
     try {
-      const response = await contract.getAllElection();
-      let allelection: electionData[] = response.map((el: any) => {
-        return {
-          electionName: el[1],
-          electionDesc: el[2],
-          id: Number(el[0]),
-        };
-      });
-      allelection.pop();
+      const response = await contract.get_all_elections();
+      let allelection: electionData[] = response.map(
+        (el: any, index: number) => {
+          console.log(el);
+          return {
+            electionName: el[0],
+            electionDesc: el[1],
+            id: Number(index),
+            election_address: el[2],
+          };
+        }
+      );
       setElection(allelection);
       console.log(allelection);
     } catch (e) {
@@ -58,7 +57,7 @@ export default function ElectionGrid() {
 
   useEffect(() => {
     getElections();
-  }, [provider]);
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -84,6 +83,7 @@ export default function ElectionGrid() {
                   electionid={el.id}
                   name={el.electionName}
                   desc={el.electionDesc}
+                  address={el.election_address}
                   endDate="Wed Nov 2, 2024"
                 />
               );

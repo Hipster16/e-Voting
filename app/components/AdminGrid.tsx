@@ -1,16 +1,16 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
 import AdminCard from "./AdminCard";
-import { connectContract } from "../utils";
+import { connectContractFactory } from "../utils";
 import { electionData } from "@/Models/types/electionCard";
 
 export default function ElectionGrid() {
   const [dataFetched, setDataFetched] = useState(false);
   const [data, setdata] = useState<electionData[]>([]);
   const getAll = async () => {
-    const contract = await connectContract();
+    const contract = await connectContractFactory();
     const transaction = await contract.get_all_elections();
-    let elections = transaction.map((election: any, index:number) => {
+    let elections = transaction.map((election: any, index: number) => {
       return {
         electionName: election[0],
         electionDesc: election[1],

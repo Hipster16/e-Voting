@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import React, { useEffect, useState } from "react";
-import { connectContract } from "../utils";
+import { connectContractFactory } from "../utils";
 import { useRouter } from "next/navigation";
 import { getBigInt } from "ethers";
 
@@ -24,14 +24,12 @@ type ElectionCardProps = {
 export default function ElectionCard(props: ElectionCardProps) {
   const [disabled, setDisabled] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const checkStatus = async () => {
     try {
-      const contract = await connectContract();
+      const contract = await connectContractFactory();
 
-      await contract.getResults(
-        getBigInt(props.eletionid.toString())
-      );
+      await contract.getResults(getBigInt(props.eletionid.toString()));
       setDisabled(true);
     } catch (err) {
       setDisabled(false);
@@ -43,16 +41,14 @@ export default function ElectionCard(props: ElectionCardProps) {
   };
   const handleEndElection = async () => {
     try {
-      setSubmitting(true)
-      const contract = await connectContract();
-      const id = props.eletionid.toString()
-      let transaction = await contract.endElection(
-        getBigInt(id)
-      );
+      setSubmitting(true);
+      const contract = await connectContractFactory();
+      const id = props.eletionid.toString();
+      let transaction = await contract.endElection(getBigInt(id));
       await transaction.wait();
       console.log(transaction);
-      setSubmitting(false)
-      router.push(props.pagelink)
+      setSubmitting(false);
+      router.push(props.pagelink);
     } catch (e) {
       console.log(e);
     }
@@ -86,7 +82,7 @@ export default function ElectionCard(props: ElectionCardProps) {
             </DialogClose>
             <button
               onClick={handleEndElection}
-              disabled = {submitting}
+              disabled={submitting}
               className="bg-blue-600 text-lg text-white w-[100px] font-medium py-2 px-5 rounded-full hover:bg-black hover:text-white"
             >
               yes
