@@ -115,8 +115,6 @@ function ElectionInfo({ params }: { params: { id: string } }) {
               </div>
             ) : (
               <>
-                {wallet.accounts.length === 0 && <div className="mb-8"></div>}
-
                 <div className="rounded-lg overflow-hidden border border-slate-700 shadow-lg">
                   <Table className="w-full">
                     <TableHeader>
@@ -326,103 +324,6 @@ function Row(props: {
         </Dialog>
       </TableCell>
     </TableRow>
-  );
-}
-
-function Connect(props: { privatekey: string }) {
-  const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy(): void {
-    navigator.clipboard.writeText(props.privatekey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  return (
-    <div className="bg-slate-800/80 border border-slate-700 shadow-lg rounded-lg p-6 mb-8">
-      <div className="pb-4">
-        <h2 className="text-xl font-semibold text-center text-white">
-          Connect Your Wallet
-        </h2>
-      </div>
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-300">
-            Your Private Key
-          </label>
-          <div className="flex items-center bg-slate-900 rounded-lg overflow-hidden border border-slate-700">
-            <div className="flex-grow px-4 py-3 font-mono text-sm truncate text-slate-300">
-              {props.privatekey}
-            </div>
-            <button
-              onClick={handleCopy}
-              className={`px-4 py-3 h-full rounded-none border-l border-slate-700 ${
-                copied
-                  ? "bg-green-600 text-white"
-                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-              }`}
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
-          </div>
-        </div>
-
-        <div className="h-px bg-slate-700 my-4"></div>
-
-        {!hasProvider && (
-          <div className="text-center">
-            <a
-              href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?pli=1"
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all"
-            >
-              <Image
-                src="/metamask.png"
-                alt="MetaMask"
-                width={24}
-                height={24}
-                className="mr-1"
-              />
-              Install MetaMask
-            </a>
-            <p className="mt-3 text-sm text-slate-400">
-              MetaMask is required to participate in this election
-            </p>
-          </div>
-        )}
-
-        {hasProvider && wallet.accounts.length === 0 && (
-          <button
-            disabled={isConnecting}
-            onClick={connectMetaMask}
-            className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-lg h-auto disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-center justify-center gap-3">
-              <Image
-                src="/metamask.png"
-                alt="MetaMask"
-                width={24}
-                height={24}
-              />
-              {isConnecting ? "Connecting..." : "Connect with MetaMask"}
-            </div>
-          </button>
-        )}
-
-        {hasProvider && wallet.accounts.length > 0 && (
-          <div className="bg-red-900/40 border border-red-800 text-red-200 rounded-lg p-4 flex items-start gap-3">
-            <div className="text-red-400 flex-shrink-0 mt-0.5">⚠️</div>
-            <div>
-              <p className="font-medium">Authentication Error</p>
-              <p className="text-sm mt-1">
-                Connected account is not authorized. Please disconnect and
-                reconnect with the correct account.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
   );
 }
 
