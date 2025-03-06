@@ -3,11 +3,22 @@
 import ElectionGrid from "@/app/components/ElectionGrid";
 import Navbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { Home, Search, FileBarChart } from "lucide-react";
+import { useMetaMask } from "@/app/hooks/useMetamask";
 
 function Sidebar() {
   const router = useRouter();
+  const { wallet } = useMetaMask();
+  useEffect(() => {
+    if (
+      !wallet.accounts[0] ||
+      wallet.accounts.length > 1 ||
+      wallet.accounts[0] === process.env.NEXT_PUBLIC_ADMIN_ADDRESS
+    ) {
+      router.push("/");
+    }
+  });
 
   return (
     <div className="w-20 min-h-full flex flex-col items-center bg-gradient-to-b from-[#12141d] to-[#0f1117] p-4">

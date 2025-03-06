@@ -18,29 +18,31 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { User, onAuthStateChanged } from "firebase/auth";
-import auth from "@/firebase/auth";
-import { useRouter } from "next/navigation";
 import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-  writeBatch,
-} from "firebase/firestore";
-import db from "@/firebase/firestore";
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useRouter } from "next/navigation";
 import { useMetaMask } from "@/app/hooks/useMetamask";
 import Image from "next/image";
-import { connectContractFactory } from "@/app/utils";
-import { getBigInt } from "ethers";
+import { connectContract } from "@/app/utils";
+import { getBigInt, id } from "ethers";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { votingSchema } from "@/Models/schema/votingSchema";
 
 function ElectionInfo({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [name, setName] = useState("");
   const [data, setData] = useState<any>();
-  const [key, setKey] = useState("key");
+  const [isLoading, setIsLoading] = useState(true);
+
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
 
   const getRandom = (arr: string[]) => {
@@ -49,94 +51,130 @@ function ElectionInfo({ params }: { params: { id: string } }) {
     return arr[random];
   };
 
+  const getElectionDetails = async () => {
+    setIsLoading(true);
+    try {
+      const contract = await connectContract(params.id);
+      const _name = await contract.name();
+      setName(_name);
+      const response = await contract.get_All_candidates();
+      const value = response.map((el: any) => {
+        return {
+          email: el[0],
+          clgId: el[1],
+        };
+      });
+      setData(value);
+    } catch (error) {
+      console.error("Failed to fetch election details:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth.authState, async (userData) => {
-      if (userData) {
-        setUser(userData);
-        const q = query(
-          collection(db, "Elections"),
-          where("elid", "==", params.id),
-          where("participants", "array-contains", {
-            email: userData.email,
-            voted: false,
-          })
-        );
-        const doc = await getDocs(q);
-        if (doc.docs.length == 0 || doc.docs.length > 1) {
-          console.log("no access to this election");
-          router.push("/student/dashboard");
-        }
-        const value = doc.docs.map((d) => {
-          return d.data();
-        });
-        setData(value[0]);
-        setKey(getRandom(value[0]?.privateKeys));
-      } else {
-        router.push("/student/login");
-      }
-    });
-    return unsubscribe;
+    if (
+      !wallet.accounts[0] ||
+      wallet.accounts.length > 1 ||
+      wallet.accounts[0] === process.env.NEXT_PUBLIC_ADMIN_ADDRESS
+    ) {
+      // router.push("/");
+    }
+    getElectionDetails();
   }, []);
 
-  // useEffect(() => {
-  //   if (user == null) {
-  //     return;
-  //   } else {
-  //     const q = query(
-  //       collection(db, "Elections"),
-  //       where("id", "!=", params.id)
-  //     );
-  //     const dataFetch = onSnapshot(q, (snapshot) => {
-  //       snapshot.docs.map((el) => {
-  //         console.log(el);
-  //       });
-  //     });
-  //     return dataFetch
-  //   }
-  // },[user]);
-
   return (
-    <main className="h-screen p-16 ">
-      <div className="w-full h-full rounded-3xl border-1 border-gray-200 p-10 mx-auto">
+    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+      <div className="container mx-auto px-4 py-8">
         <Navbar />
-        <div className="w-full h-full mt-12 flex flex-col items-center gap-10">
-          <h1 className="text-6xl font-semibold ">{data?.name}</h1>
-          <p className="text-4xl text-center w-[70%]">{data?.desc}</p>
-          <div className="w-[50%] flex flex-col mt-5 gap-5">
-            {!wallet.accounts[0] ? (
-              <Connect privatekey={key} />
+
+        <div className="mt-8 bg-slate-800/50 border border-slate-700 shadow-xl rounded-xl p-6">
+          <div className="text-center pb-6">
+            <div className="mb-2 mx-auto inline-block px-3 py-1 text-blue-400 border border-blue-400 rounded-full text-sm">
+              Election ID: {params.id.slice(0, 7).concat("...")}
+            </div>
+            <div className="mb-2 mx-auto inline-block px-3 py-1 text-blue-400 border border-blue-400 rounded-full text-sm">
+              Election Name:{" "}
+              {name.length <= 7 ? name : name.slice(0, 7).concat("...")}
+            </div>
+            <h1 className="text-4xl font-bold text-white">
+              {isLoading
+                ? "Loading election details..."
+                : data?.name || "Election Voting Portal"}
+            </h1>
+            <p className="text-lg text-slate-300 mt-4 max-w-3xl mx-auto">
+              {data?.desc ||
+                "Select a candidate below to cast your vote. Your vote is secure and confidential through blockchain technology."}
+            </p>
+          </div>
+
+          <div className="pt-6">
+            {isLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
             ) : (
-              <Table className="bg-slate-100/10 rounded-lg ">
-                <TableHeader className="">
-                  <TableRow className="flex justify-between text-xl text-white pt-5">
-                    <TableHead className="text-white font-semibold">
-                      CandidateName
-                    </TableHead>
-                    {/* <TableHead className="text-white font-semibold">
-                      Candidate ID
-                    </TableHead> */}
-                    <TableHead className="text-right text-white font-semibold">
-                      Option
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="rounded-b-lg">
-                  {data &&
-                    data.Candidates.map((el: any, index: number) => {
-                      return (
-                        <Row
-                          key={index}
-                          email={el.email}
-                          clgId={el.clgId}
-                          user={user!}
-                          data={data}
-                          id={params.id}
-                          privateKey={key}
-                        />
-                      );
-                    })}
-                </TableBody>
-              </Table>
+              <>
+                {wallet.accounts.length === 0 && <div className="mb-8"></div>}
+
+                <div className="rounded-lg overflow-hidden border border-slate-700 shadow-lg">
+                  <Table className="w-full">
+                    <TableHeader>
+                      <TableRow className="bg-slate-700">
+                        <TableHead className="text-center font-bold text-white w-1/2 py-4">
+                          Candidate Email
+                        </TableHead>
+                        <TableHead className="text-center font-bold text-white w-1/4 py-4">
+                          ID
+                        </TableHead>
+                        <TableHead className="text-center font-bold text-white w-1/4 py-4">
+                          Action
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data && data.length > 0 ? (
+                        data.map((el: any, index: number) => (
+                          <Row
+                            key={index}
+                            email={el.email}
+                            clgId={el.clgId}
+                            data={data}
+                            id={params.id}
+                            isEven={index % 2 === 0}
+                          />
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell
+                            colSpan={3}
+                            className="text-center py-8 text-slate-400"
+                          >
+                            No candidates found for this election.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <div className="mt-8 bg-blue-900/20 rounded-lg p-6 border border-blue-800">
+                  <div className="flex items-start gap-4">
+                    <div className="text-blue-400 flex-shrink-0 mt-1">⚠️</div>
+                    <div>
+                      <h3 className="font-medium text-lg text-blue-300">
+                        Important Information
+                      </h3>
+                      <p className="text-slate-300 mt-2">
+                        Your vote is permanently recorded on the blockchain and
+                        cannot be changed once submitted. Please ensure you've
+                        selected the right candidate before confirming your
+                        vote.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -148,79 +186,142 @@ function ElectionInfo({ params }: { params: { id: string } }) {
 function Row(props: {
   email: string;
   clgId: string;
-  user: User;
   data: any;
   id: string;
-  privateKey: string;
+  isEven: boolean;
 }) {
   const router = useRouter();
-  async function handleVote() {
+  const [isVoting, setIsVoting] = useState(false);
+  const form = useForm<z.infer<typeof votingSchema>>({
+    resolver: zodResolver(votingSchema),
+  });
+
+  async function handleVote(values: z.infer<typeof votingSchema>) {
     try {
-      const contract = await connectContractFactory();
-      let transaction = await contract.vote(
-        props.user.uid,
-        getBigInt(props.id),
-        props.email
-      );
-      await transaction.wait();
-      console.log(transaction);
-      const q = query(
-        collection(db, "Elections"),
-        where("elid", "==", props.id),
-        where("participants", "array-contains", {
-          email: props.user.email,
-          voted: false,
-        })
-      );
-      const document = await getDocs(q);
-      let value = document.docs[0].data();
-      const p = value.participants.map((obj: any) => {
-        if (obj.email == props.user.email) {
-          return { ...obj, voted: true };
-        }
-        return obj;
-      });
-      let k: string[] = value.privateKeys;
-      k.splice(k.indexOf(props.privateKey), 1);
-      await updateDoc(doc(db, "Elections", document.docs[0].id), {
-        participants: p,
-        privateKeys: k,
-      });
-      router.push("/student/dashboard");
+      setIsVoting(true);
+      // router.push("/student/dashboard");
     } catch (e) {
-      console.log(e);
+      console.error("Voting failed:", e);
+    } finally {
+      setIsVoting(false);
     }
   }
 
   return (
-    <TableRow className="flex justify-between items-center">
-      <TableCell>
-        <p className="text-lg">{props.email}</p>
+    <TableRow
+      className={`hover:bg-slate-700/30 transition-colors ${
+        props.isEven ? "bg-slate-800/50" : "bg-slate-800/30"
+      }`}
+    >
+      <TableCell className="text-center py-4 px-6">
+        <span className="font-medium text-slate-200">{props.email}</span>
       </TableCell>
-      {/* <TableCell>
-        <p className="text-lg font-medium text-center">{props.clgId}</p>
-      </TableCell> */}
-      <TableCell>
+      <TableCell className="text-center py-4">
+        <span className="px-2 py-1 bg-slate-700 text-slate-300 rounded font-mono text-sm">
+          {props.clgId}
+        </span>
+      </TableCell>
+      <TableCell className="text-center py-4">
         <Dialog>
-          <DialogTrigger className="bg-blue-600 text-lg font-medium py-2 px-5 rounded-full hover:bg-white hover:text-blue-600">
-            Vote
+          <DialogTrigger asChild>
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 flex items-center gap-2 transition-all"
+              disabled={isVoting}
+            >
+              {isVoting ? "Processing..." : "Vote"}
+            </button>
           </DialogTrigger>
-          <DialogContent className="text-black">
-            <DialogHeader className="text-lg">Confirm Vote</DialogHeader>
-            <DialogDescription>
-              Are you sure? The vote cannot be changed.
-            </DialogDescription>
-            <DialogFooter>
-              <DialogClose className="bg-red-600 text-lg text-white w-[100px] font-medium py-2 px-5 rounded-full hover:bg-black ">
-                No
-              </DialogClose>
-              <DialogClose
-                onClick={handleVote}
-                className="bg-blue-600 text-lg text-white w-[100px] font-medium py-2 px-5 rounded-full hover:bg-black hover:text-white"
+          <DialogContent className="bg-slate-900 border border-slate-700 text-white">
+            <DialogHeader>
+              <h2 className="text-xl font-bold text-white">
+                Confirm Your Vote
+              </h2>
+              <DialogDescription className="text-slate-300 mt-2">
+                You are about to vote for:{" "}
+                <span className="font-medium text-blue-400">{props.email}</span>
+              </DialogDescription>
+            </DialogHeader>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleVote)}
+                className="space-y-6"
               >
-                yes
-              </DialogClose>
-            </DialogFooter>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-slate-300">
+                        Your Name
+                      </FormLabel>
+                      <FormControl>
+                        <input
+                          placeholder="Enter your full name"
+                          className="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-md text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      {form.formState.errors.name && (
+                        <p className="text-sm text-red-500">
+                          {form.formState.errors.name.message}
+                        </p>
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="passphrase"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-slate-300">
+                        Security Passphrase
+                      </FormLabel>
+                      <FormControl>
+                        <input
+                          type="password"
+                          placeholder="Enter your security passphrase"
+                          className="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-md text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      {form.formState.errors.passphrase && (
+                        <p className="text-sm text-red-500">
+                          {form.formState.errors.passphrase.message}
+                        </p>
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <div className="p-4 bg-blue-900/20 rounded-lg border border-blue-800/50">
+                  <p className="text-sm text-slate-300">
+                    Warning: Your vote will be permanently recorded on the
+                    blockchain and cannot be changed after confirmation.
+                  </p>
+                </div>
+
+                <DialogFooter className="flex justify-between gap-4">
+                  <DialogClose asChild>
+                    <button
+                      type="button"
+                      className="border border-slate-600 bg-transparent text-white hover:bg-slate-800 px-6 py-2 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                  </DialogClose>
+                  <button
+                    type="submit"
+                    disabled={isVoting}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+                  >
+                    {isVoting ? "Processing..." : "Confirm Vote"}
+                  </button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </TableCell>
@@ -230,54 +331,99 @@ function Row(props: {
 
 function Connect(props: { privatekey: string }) {
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
-  function handleCopy(event: any): void {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy(): void {
     navigator.clipboard.writeText(props.privatekey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
-    <div className="w-full flex items-center flex-col gap-7 pt-10">
-      <h2 className="text-2xl font-semibold">private key</h2>
-      <div className="w-min flex bg-slate-100/10 justify-evenly items-center rounded-xl">
-        <p className="px-5">{props.privatekey}</p>
-        <button
-          className="px-5 bg-green-600 p-5 rounded-r-xl hover:bg-white hover:text-black"
-          onClick={handleCopy}
-        >
-          copy
-        </button>
+    <div className="bg-slate-800/80 border border-slate-700 shadow-lg rounded-lg p-6 mb-8">
+      <div className="pb-4">
+        <h2 className="text-xl font-semibold text-center text-white">
+          Connect Your Wallet
+        </h2>
       </div>
-      {!hasProvider && (
-        <a
-          href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?pli=1"
-          className="bg-blue-600 text-lg font-extrabold py-4 px-10 rounded-full hover:bg-white hover:text-black"
-        >
-          Install Metamask
-        </a>
-      )}
-      {hasProvider && wallet.accounts.length == 0 && (
-        <div className="w-full flex justify-center">
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">
+            Your Private Key
+          </label>
+          <div className="flex items-center bg-slate-900 rounded-lg overflow-hidden border border-slate-700">
+            <div className="flex-grow px-4 py-3 font-mono text-sm truncate text-slate-300">
+              {props.privatekey}
+            </div>
+            <button
+              onClick={handleCopy}
+              className={`px-4 py-3 h-full rounded-none border-l border-slate-700 ${
+                copied
+                  ? "bg-green-600 text-white"
+                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        </div>
+
+        <div className="h-px bg-slate-700 my-4"></div>
+
+        {!hasProvider && (
+          <div className="text-center">
+            <a
+              href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?pli=1"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all"
+            >
+              <Image
+                src="/metamask.png"
+                alt="MetaMask"
+                width={24}
+                height={24}
+                className="mr-1"
+              />
+              Install MetaMask
+            </a>
+            <p className="mt-3 text-sm text-slate-400">
+              MetaMask is required to participate in this election
+            </p>
+          </div>
+        )}
+
+        {hasProvider && wallet.accounts.length === 0 && (
           <button
             disabled={isConnecting}
             onClick={connectMetaMask}
-            className="bg-blue-600 text-lg font-extrabold py-4 px-10 rounded-full hover:bg-white hover:text-black w-[50%] flex justify-evenly"
+            className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-lg h-auto disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <Image
-              src="/metamask.png"
-              alt=""
-              width={20}
-              height={20}
-              className="m-1 mr-2"
-            />
-            Connect with private key above
+            <div className="flex items-center justify-center gap-3">
+              <Image
+                src="/metamask.png"
+                alt="MetaMask"
+                width={24}
+                height={24}
+              />
+              {isConnecting ? "Connecting..." : "Connect with MetaMask"}
+            </div>
           </button>
-        </div>
-      )}
-      {hasProvider && wallet.accounts.length > 0 && (
-        <div className="bg-red-600 text-sm font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly">
-          Signed in account is not admin... disconnect and reconnect
-        </div>
-      )}
+        )}
+
+        {hasProvider && wallet.accounts.length > 0 && (
+          <div className="bg-red-900/40 border border-red-800 text-red-200 rounded-lg p-4 flex items-start gap-3">
+            <div className="text-red-400 flex-shrink-0 mt-0.5">⚠️</div>
+            <div>
+              <p className="font-medium">Authentication Error</p>
+              <p className="text-sm mt-1">
+                Connected account is not authorized. Please disconnect and
+                reconnect with the correct account.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
 export default ElectionInfo;
