@@ -28,11 +28,12 @@ import { formSchema } from "@/Models/schema/electionFormSchema";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { useRouter } from "next/navigation";
 import FormProgress from "./FormProgress";
-import { addDoc, collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import db from "@/firebase/firestore";
 import { student } from "@/Models/types/student";
 import { useMetaMask } from "../hooks/useMetamask";
-import { connectContractFactory, createNewWallet } from "../utils";
+import { connectContractFactory } from "../utils";
+import electionAbi from "@/artifacts/contracts/ElectionContract/ElectionContract.json";
 
 export default function ElectionForm() {
   const labelStyle = "text-black text-xl font-medium";
@@ -41,7 +42,7 @@ export default function ElectionForm() {
   const [SelectedParticipants, setSelectedParticipants] = useState<student[]>(
     []
   );
-  const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
+  const { wallet } = useMetaMask();
   const [submitting, setsubmitting] = useState(false);
   const [SelectedCandidates, setSelectedCandidates] = useState<student[]>([]);
   const [CandidateErrorMsg, setCandidateErrorMsg] = useState("");
@@ -115,7 +116,29 @@ export default function ElectionForm() {
         hashes
       );
       await transaction.wait();
-      console.log(transaction);
+      const new_election_address = await contract
+        .get_all_elections()
+        .then((res) => {
+          let election = res.at(-1);
+          return election[2];
+        });
+      await fetch(
+        "https://paymaster-dashboard-backend.prod.biconomy.io/api/v2/public/sdk/smart-contract",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            authToken: process.env.NEXT_PUBLIC_AUTH_TOKEN,
+            apiKey: process.env.NEXT_PUBLIC_PAYMASTER_KEY,
+          } as HeadersInit,
+          body: JSON.stringify({
+            name: values.ElectionName,
+            address: new_election_address,
+            abi: JSON.stringify(electionAbi),
+            whitelistedMethods: ["vote"],
+          }),
+        }
+      );
       form.reset();
       setsubmitting(false);
       router.push("/admin/dashboard");

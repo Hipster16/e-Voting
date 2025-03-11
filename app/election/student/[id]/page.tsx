@@ -164,9 +164,9 @@ function ElectionInfo({ params }: { params: { id: string } }) {
                       </h3>
                       <p className="text-slate-300 mt-2">
                         Your vote is permanently recorded on the blockchain and
-                        cannot be changed once submitted. Please ensure you've
-                        selected the right candidate before confirming your
-                        vote.
+                        cannot be changed once submitted. Please ensure
+                        you&apos;ve selected the right candidate before
+                        confirming your vote.
                       </p>
                     </div>
                   </div>
@@ -306,7 +306,7 @@ function Row(props: {
           {props.clgId}
         </span>
       </TableCell>
-      <TableCell className="text-center py-4">
+      <TableCell className="text-center py-4 flex justify-center">
         <Dialog>
           <DialogTrigger asChild>
             <button

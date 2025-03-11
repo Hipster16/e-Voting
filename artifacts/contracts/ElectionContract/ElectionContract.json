@@ -140,6 +140,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "get_hash_array",
+		"outputs": [
+			{
+				"internalType": "uint256[60]",
+				"name": "",
+				"type": "uint256[60]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
