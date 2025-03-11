@@ -1,5 +1,6 @@
 "use client";
 import Navbar from "@/app/components/Navbar";
+import * as snarkjs from "snarkjs";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -21,17 +22,17 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useMetaMask } from "@/app/hooks/useMetamask";
-import Image from "next/image";
-import { connectContract } from "@/app/utils";
-import { getBigInt, id } from "ethers";
+import {
+  connectContract,
+  gassless_transact,
+  getPoseidonHash,
+} from "@/app/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,19 +44,17 @@ function ElectionInfo({ params }: { params: { id: string } }) {
   const [data, setData] = useState<any>();
   const [isLoading, setIsLoading] = useState(true);
 
-  const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
-
-  const getRandom = (arr: string[]) => {
-    if (!arr) return "";
-    const random = Math.floor(Math.random() * arr.length);
-    return arr[random];
-  };
+  const { wallet } = useMetaMask();
 
   const getElectionDetails = async () => {
     setIsLoading(true);
     try {
       const contract = await connectContract(params.id);
       const _name = await contract.name();
+      const status = await contract.status();
+      if (!status) {
+        router.push("/");
+      }
       setName(_name);
       const response = await contract.get_All_candidates();
       const value = response.map((el: any) => {
@@ -78,7 +77,7 @@ function ElectionInfo({ params }: { params: { id: string } }) {
       wallet.accounts.length > 1 ||
       wallet.accounts[0] === process.env.NEXT_PUBLIC_ADMIN_ADDRESS
     ) {
-      // router.push("/");
+      router.push("/");
     }
     getElectionDetails();
   }, []);
@@ -193,11 +192,99 @@ function Row(props: {
   const form = useForm<z.infer<typeof votingSchema>>({
     resolver: zodResolver(votingSchema),
   });
+  function parseArrayString(inputString: string): string[][] {
+    try {
+      try {
+        const jsonString = `[${inputString}]`;
+        return JSON.parse(jsonString);
+      } catch (e) {}
+      let cleanedInput = inputString;
 
+      cleanedInput = cleanedInput.replace(/\]\s*\[/g, "],[");
+
+      if (!cleanedInput.trim().startsWith("[")) {
+        cleanedInput = "[" + cleanedInput;
+      }
+      if (!cleanedInput.trim().endsWith("]")) {
+        cleanedInput = cleanedInput + "]";
+      }
+
+      return JSON.parse(cleanedInput);
+    } catch (error) {
+      console.error("Error parsing array string:", error);
+
+      const result = [];
+      let currentDepth = 0;
+      let currentArray = "";
+
+      for (let i = 0; i < inputString.length; i++) {
+        const char = inputString[i];
+
+        if (char === "[") {
+          currentDepth++;
+          currentArray += char;
+        } else if (char === "]") {
+          currentDepth--;
+          currentArray += char;
+
+          if (currentDepth === 0) {
+            try {
+              result.push(JSON.parse(currentArray));
+              currentArray = "";
+            } catch (e) {
+              console.error("Error parsing sub-array:", e);
+            }
+          }
+        } else {
+          currentArray += char;
+        }
+      }
+
+      if (result.length === 0) {
+        throw new Error(
+          "Failed to parse the array string using all available methods"
+        );
+      }
+
+      return result;
+    }
+  }
   async function handleVote(values: z.infer<typeof votingSchema>) {
     try {
       setIsVoting(true);
-      // router.push("/student/dashboard");
+      console.log(values);
+      const inputHash = await getPoseidonHash(values.name, values.passphrase);
+      const contract = await connectContract(props.id);
+      let hashArray: any = [];
+      for (let i = 0; i < 60; i++) {
+        console.log(`get ${i}`);
+        hashArray.push(await contract.hashArray(i));
+      }
+      console.log([inputHash, hashArray]);
+      const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+        { ...inputHash, hashArray, contractAddress: props.id },
+        "/election_circuit.wasm",
+        "/election_circuit_0001.zkey"
+      );
+      const calldata: string[][] = await snarkjs.groth16
+        .exportSolidityCallData(proof, publicSignals)
+        .then((res) => {
+          return parseArrayString(res);
+        });
+
+      console.log(calldata);
+      const data = contract.interface.encodeFunctionData("vote", [
+        calldata[0],
+        calldata[1],
+        calldata[2],
+        calldata[3],
+        props.clgId,
+      ]);
+      gassless_transact({
+        to: props.id,
+        data,
+      });
+      router.push("/student/dashboard");
     } catch (e) {
       console.error("Voting failed:", e);
     } finally {

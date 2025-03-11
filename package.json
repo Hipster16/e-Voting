@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@biconomy/account": "^4.5.7",
     "@ethereum-attestation-service/eas-sdk": "^2.7.0",
     "@hookform/resolvers": "^3.4.2",
     "@metamask/detect-provider": "^2.0.0",
@@ -22,6 +23,7 @@
     "@tanstack/react-table": "^8.17.3",
     "@types/circomlibjs": "^0.1.6",
     "@types/nodemailer": "^6.4.17",
+    "@types/snarkjs": "^0.7.9",
     "circomlibjs": "^0.1.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -38,6 +40,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.3.5",
     "react-hook-form": "^7.51.5",
+    "snarkjs": "^0.7.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "web3": "^4.10.0",
