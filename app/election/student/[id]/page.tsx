@@ -255,11 +255,7 @@ function Row(props: {
       console.log(values);
       const inputHash = await getPoseidonHash(values.name, values.passphrase);
       const contract = await connectContract(props.id);
-      let hashArray: any = [];
-      for (let i = 0; i < 60; i++) {
-        console.log(`get ${i}`);
-        hashArray.push(await contract.hashArray(i));
-      }
+      const hashArray = await contract.get_hash_array();
       console.log([inputHash, hashArray]);
       const { proof, publicSignals } = await snarkjs.groth16.fullProve(
         { ...inputHash, hashArray, contractAddress: props.id },
@@ -280,7 +276,7 @@ function Row(props: {
         calldata[3],
         props.clgId,
       ]);
-      gassless_transact({
+      await gassless_transact({
         to: props.id,
         data,
       });
