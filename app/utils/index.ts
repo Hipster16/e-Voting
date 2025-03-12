@@ -64,6 +64,15 @@ export async function getPoseidonHash(input1:string, input2:string) {
   };
 }
 
+export async function doublePoseidonHash(input1: string, input2: string) {
+  const poseidon = await buildPoseidon();
+  const hash1 = poseidon.F.toString(poseidon([stringToBigInt(input1)])); // First input hashed
+  const hash2 = poseidon.F.toString(poseidon([stringToBigInt(input2)])); // Second input hashed
+  const finalHash = poseidon.F.toString(poseidon([hash1, hash2])); // Hash of the two hashed values
+  console.log(hash1, hash2);
+  return finalHash;
+}
+
 export const config = {
   biconomyPaymasterApiKey: process.env.NEXT_PUBLIC_PAYMASTER_KEY,
   bundlerUrl: "https://bundler.biconomy.io/api/v2/80002/nJPK7B3ru.dd7f7861-190d-41bd-af80-6877f74b8f44",

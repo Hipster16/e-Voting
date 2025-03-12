@@ -11,63 +11,69 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { buildPoseidon } from "circomlibjs"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMetaMask } from "../hooks/useMetamask";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { doublePoseidonHash } from "../utils";
 import db from "@/firebase/firestore";
 export default function Signin() {
   const labelStyle = "text-black text-xl font-medium";
-  const { wallet } = useMetaMask();
   const inputStyle = "bg-blue-100/60 p-5 text-black rounded-2xl";
   const [errormsg, setErrormsg] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  // || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
   const form = useForm<z.infer<typeof StudentSigninSchema>>({
     resolver: zodResolver(StudentSigninSchema),
   });
 
-  function stringToBigInt(input: string) {
-    const encoder = new TextEncoder();
-    const bytes = encoder.encode(input);
-    const hexString = Array.from(bytes)
-      .map((byte) => byte.toString(16).padStart(2, "0"))
-      .join("");
-    return BigInt(`0x${hexString}`);
-  }
-
-  async function doublePoseidonHash(input1: string, input2: string) {
-    const poseidon = await buildPoseidon();
-    const hash1 = poseidon.F.toString(poseidon([stringToBigInt(input1)])); // First input hashed
-    const hash2 = poseidon.F.toString(poseidon([stringToBigInt(input2)])); // Second input hashed
-    const finalHash = poseidon.F.toString(poseidon([hash1, hash2])); // Hash of the two hashed values
-    console.log(hash1, hash2);
-    return finalHash;
-  }
-
   async function onSubmit(values: z.infer<typeof StudentSigninSchema>) {
     setLoading(true);
-    const q = query(collection(db, "Voters"), where("email", "==", values.email));
-    const doc = await getDocs(q)
-    if(!doc.empty) {
-        console.log("already user with same exist");
-        setLoading(false);
-        return;
+    const q = query(
+      collection(db, "Voters"),
+      where("email", "==", values.email)
+    );
+    const docs = await getDocs(q);
+    if (!docs.empty) {
+      for (const _doc of docs.docs) {
+        if (_doc.data().verified) {
+          setErrormsg("This email has already been registered");
+          setLoading(false);
+          return;
+        } else {
+          await deleteDoc(_doc.ref);
+        }
+      }
     }
-    const _userhash = await doublePoseidonHash(values.name, values.passphrase)
-    await addDoc(collection(db, "Voters"), {
-        email: values.email,
+    const authentication_pin = Math.floor(100000 + Math.random() * 900000);
+    const _userhash = await doublePoseidonHash(values.name, values.passphrase);
+    const new_doc = await addDoc(collection(db, "Voters"), {
+      verified: false,
+      email: values.email,
+      name: values.name,
+      clgId: values.college_id.toUpperCase(),
+      userhash: _userhash,
+      authpin: authentication_pin,
+    });
+    await fetch(`${baseUrl}/api/sendMail`, {
+      method: "POST",
+      body: JSON.stringify({
         name: values.name,
-        clgId: values.college_id.toUpperCase(),
-        userhash: _userhash
-      });
+        pin: authentication_pin,
+        email: values.email,
+      }),
+    });
     setLoading(false);
-    router.push("/")
+    router.push(`/student/signin/auth/${new_doc.id}`);
   }
 
   return (
@@ -135,12 +141,10 @@ export default function Signin() {
           name="passphrase"
           render={({ field }) => (
             <FormItem className="flex flex-col gap-1">
-              <FormLabel className={labelStyle}>
-                Secret Passphrase
-              </FormLabel>
+              <FormLabel className={labelStyle}>Secret Passphrase</FormLabel>
               <FormControl>
                 <input
-                  type="text"
+                  type="password"
                   className={inputStyle}
                   placeholder="Enter the secret passphrase"
                   {...field}
