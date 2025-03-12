@@ -37,8 +37,8 @@ function Auth_Page({ params }: { params: { id: string } }) {
         await updateDoc(docRef, {
           verified: true,
         });
+        router.push("/student/login");
       }
-      router.push("/student/login");
     } catch (e) {
       console.log(`Auth fallied ${e}`);
     } finally {
