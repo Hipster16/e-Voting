@@ -6,7 +6,6 @@ import { electionData } from "@/Models/types/electionCard";
 import { connectContractFactory } from "../utils";
 
 export default function ElectionGrid() {
-  const [provider, setProvider] = useState<ethers.Provider | null>(null);
   const [election, setElection] = useState<electionData[]>([]);
   const [Search, setSearch] = useState("");
 
@@ -25,15 +24,6 @@ export default function ElectionGrid() {
   };
 
   async function getElections() {
-    // if (!provider) {
-    //   setProvider(
-    //     new ethers.JsonRpcProvider(
-    //       `https://polygon-amoy.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`
-    //     )
-    //   );
-    // }
-    // if (!provider) return;
-
     const contract = await connectContractFactory();
     try {
       const response = await contract.get_all_elections();
@@ -80,7 +70,6 @@ export default function ElectionGrid() {
               return (
                 <ElectionCard
                   key={index}
-                  electionid={el.id}
                   name={el.electionName}
                   desc={el.electionDesc}
                   address={el.election_address}

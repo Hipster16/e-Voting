@@ -6,7 +6,6 @@ import Evoting from "@/artifacts/contracts/Evoting.sol/Evoting.json";
 import { connectContract, connectContractFactory } from "../utils";
 
 type ElectionCardProps = {
-  electionid: number;
   name: string;
   desc: string;
   endDate: string;
@@ -20,26 +19,6 @@ export default function ElectionCard(props: ElectionCardProps) {
   };
 
   const checkStatus = async () => {
-    // if (!provider) {
-    //   setProvider(
-    //     new ethers.JsonRpcProvider(
-    //       `https://polygon-amoy.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`
-    //     )
-    //   );
-    // }
-    // if (!provider) return;
-
-    // const contract = new ethers.Contract(
-    //   process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
-    //   Evoting.abi,
-    //   provider
-    // );
-    // try {
-    //   await contract.getResults(ethers.getBigInt(props.electionid.toString()));
-    //   setEnded(true);
-    // } catch (e) {
-    //   setEnded(false);
-    // }
     const contract = await connectContract(props.address);
     try {
       const response = await contract.status();
@@ -62,7 +41,7 @@ export default function ElectionCard(props: ElectionCardProps) {
       </p>
       {ended ? (
         <Link
-          href={`/result/${props.electionid}`}
+          href={`/result/${props.address}`}
           className="bg-green-600 text-xl text-center font-medium py-2 px-10 rounded-full hover:bg-white hover:text-black"
         >
           View Results
