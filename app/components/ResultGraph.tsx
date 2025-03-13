@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { BarDatumWithColor, ResponsiveBar } from "@nivo/bar";
 import { useRouter } from "next/navigation";
 import { connectContract } from "../utils";
+import { CandidateType } from "@/Models/types/candidates";
 
 export default function ResultGraph(props: { id: string }) {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function ResultGraph(props: { id: string }) {
 
       // Get candidate data
       const result = await contract.get_All_candidates();
-      const data = result.map((el: any) => {
+      const data: CandidateType[] = result.map((el: any) => {
         return {
           CandidateName: el[0],
           CandidateId: el[1],
@@ -39,7 +40,7 @@ export default function ResultGraph(props: { id: string }) {
 
       // Calculate total votes
       const voteTotal = data.reduce(
-        (sum: number, candidate: any) => sum + candidate.Vote,
+        (sum: number, candidate: CandidateType) => sum + (candidate.Vote ?? 0),
         0
       );
       setTotalVotes(voteTotal);

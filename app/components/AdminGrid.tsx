@@ -10,14 +10,16 @@ export default function ElectionGrid() {
   const getAll = async () => {
     const contract = await connectContractFactory();
     const transaction = await contract.get_all_elections();
-    let elections = transaction.map((election: any, index: number) => {
-      return {
-        electionName: election[0],
-        electionDesc: election[1],
-        id: Number(index),
-      };
-    });
-    // elections.pop();
+    let elections: electionData[] = transaction.map(
+      (election: any, index: number) => {
+        return {
+          electionName: election[0],
+          electionDesc: election[1],
+          id: Number(index),
+          election_address: election[2],
+        };
+      }
+    );
     setdata(elections);
     setDataFetched(true);
   };

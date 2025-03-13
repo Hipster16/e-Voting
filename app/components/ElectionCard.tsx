@@ -1,9 +1,7 @@
 "use client";
-import { ethers } from "ethers";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Evoting from "@/artifacts/contracts/Evoting.sol/Evoting.json";
-import { connectContract, connectContractFactory } from "../utils";
+import { connectContract } from "../utils";
 
 type ElectionCardProps = {
   name: string;

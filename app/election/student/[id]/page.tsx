@@ -37,6 +37,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { votingSchema } from "@/Models/schema/votingSchema";
+import { CandidateType } from "@/Models/types/candidates";
 
 function ElectionInfo({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -57,7 +58,7 @@ function ElectionInfo({ params }: { params: { id: string } }) {
       }
       setName(_name);
       const response = await contract.get_All_candidates();
-      const value = response.map((el: any) => {
+      const value: CandidateType[] = response.map((el: any) => {
         return {
           email: el[0],
           clgId: el[1],
