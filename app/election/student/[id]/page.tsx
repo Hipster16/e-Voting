@@ -253,7 +253,10 @@ function Row(props: {
     try {
       setIsVoting(true);
       console.log(values);
-      const inputHash = await getPoseidonHash(values.name, values.passphrase);
+      const inputHash = await getPoseidonHash(
+        values.clgid.toUpperCase(),
+        values.passphrase
+      );
       const contract = await connectContract(props.id);
       const hashArray = await contract.get_hash_array();
       console.log([inputHash, hashArray]);
@@ -330,11 +333,11 @@ function Row(props: {
               >
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="clgid"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
                       <FormLabel className="text-sm font-medium text-slate-300">
-                        Your Name
+                        Your College ID
                       </FormLabel>
                       <FormControl>
                         <input
@@ -343,9 +346,9 @@ function Row(props: {
                           {...field}
                         />
                       </FormControl>
-                      {form.formState.errors.name && (
+                      {form.formState.errors.clgid && (
                         <p className="text-sm text-red-500">
-                          {form.formState.errors.name.message}
+                          {form.formState.errors.clgid.message}
                         </p>
                       )}
                     </FormItem>

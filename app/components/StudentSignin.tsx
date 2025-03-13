@@ -55,7 +55,10 @@ export default function Signin() {
       }
     }
     const authentication_pin = Math.floor(100000 + Math.random() * 900000);
-    const _userhash = await doublePoseidonHash(values.name, values.passphrase);
+    const _userhash = await doublePoseidonHash(
+      values.college_id.toUpperCase(),
+      values.passphrase
+    );
     const new_doc = await addDoc(collection(db, "Voters"), {
       verified: false,
       email: values.email,

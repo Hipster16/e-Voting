@@ -1,9 +1,11 @@
 import { z } from "zod";
 
 export const votingSchema = z.object({
-  name: z.string({
+  clgid: z.string({
     required_error: "This field must be filled.",
-  }).min(2, {
+  }).min(9, {
+    message: "Value is not acceptable",
+  }).max(9, {
     message: "Value is not acceptable",
   }),
   passphrase: z.string({
