@@ -21,7 +21,7 @@ export default function Navbar() {
     router.push("/");
   };
 
-  if (user === "student") {
+  if (user === "admin" || user === "student") {
     poppup = (
       <Popover>
         <PopoverTrigger>
@@ -30,24 +30,6 @@ export default function Navbar() {
             <span className="text-blue-600 font-semibold">
               {wallet.accounts[0]}
             </span>
-          </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-48 bg-gray-800 border border-slate-700 rounded-lg mt-2">
-          <button
-            className="w-full text-white text-center py-2 px-4 hover:bg-blue-600 rounded-lg transition-colors"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </PopoverContent>
-      </Popover>
-    );
-  } else if (user === "admin") {
-    poppup = (
-      <Popover>
-        <PopoverTrigger>
-          <div className="text-gray-400 hover:text-white transition-colors">
-            hello <span className="text-blue-600 font-semibold">admin</span>
           </div>
         </PopoverTrigger>
         <PopoverContent className="w-48 bg-gray-800 border border-slate-700 rounded-lg mt-2">

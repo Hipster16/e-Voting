@@ -1,21 +1,23 @@
-'use client'
-import React from 'react'
-import { useMetaMask } from '../hooks/useMetamask';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useEffect } from "react";
+import { useMetaMask } from "../hooks/useMetamask";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function MetamaskConnect() {
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
-  const router = useRouter()
-  if (hasProvider && wallet.accounts.length > 0) {
-    if (wallet.accounts[0] == process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()) {
-      console.log(wallet.accounts[0])
-      router.push("/admin/dashboard");
+  const router = useRouter();
+  useEffect(() => {
+    if (hasProvider && wallet.accounts.length > 0) {
+      if (
+        wallet.accounts[0] ==
+        process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
+      ) {
+        router.push("/admin/dashboard");
+      } else {
+      }
     }
-    else {
-
-    }
-  }
+  });
 
   return (
     <>
@@ -28,7 +30,7 @@ export default function MetamaskConnect() {
         </a>
       )}
       {hasProvider && wallet.accounts.length == 0 && (
-        <div className='w-full'>
+        <div className="w-full">
           <button
             disabled={isConnecting}
             onClick={connectMetaMask}
@@ -46,10 +48,10 @@ export default function MetamaskConnect() {
         </div>
       )}
       {hasProvider && wallet.accounts.length > 0 && (
-        <div className='bg-blue-600 text-sm font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly'>
+        <div className="bg-blue-600 text-sm font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly">
           {`Connect from ${wallet.accounts[0].slice(0, 6).concat("...")}`}
         </div>
       )}
     </>
-  )
+  );
 }

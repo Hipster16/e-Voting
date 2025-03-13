@@ -4,6 +4,7 @@ import { BarDatumWithColor, ResponsiveBar } from "@nivo/bar";
 import { useRouter } from "next/navigation";
 import { connectContract } from "../utils";
 import { CandidateType } from "@/Models/types/candidates";
+import { useMetaMask } from "../hooks/useMetamask";
 
 export default function ResultGraph(props: { id: string }) {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function ResultGraph(props: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const [winner, setWinner] = useState("");
   const [totalVotes, setTotalVotes] = useState(0);
+  const { wallet } = useMetaMask();
   const [showingStats, setShowingStats] = useState(false);
 
   async function handleFetchResult() {
@@ -91,6 +93,13 @@ export default function ResultGraph(props: { id: string }) {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!wallet.accounts.length || wallet.accounts.length > 1) {
+      router.push("/admin/login");
+      return;
+    }
+  });
 
   return (
     <div className="w-full flex flex-col items-center">

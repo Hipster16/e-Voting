@@ -1,13 +1,16 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
 import ElectionCard from "./ElectionCard";
-import { ethers } from "ethers";
 import { electionData } from "@/Models/types/electionCard";
 import { connectContractFactory } from "../utils";
+import { useMetaMask } from "../hooks/useMetamask";
+import { useRouter } from "next/navigation";
 
 export default function ElectionGrid() {
   const [election, setElection] = useState<electionData[]>([]);
   const [Search, setSearch] = useState("");
+  const { wallet } = useMetaMask();
+  const router = useRouter();
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -46,6 +49,15 @@ export default function ElectionGrid() {
   }
 
   useEffect(() => {
+    if (
+      !wallet.accounts.length ||
+      wallet.accounts.length > 1 ||
+      wallet.accounts[0] ==
+        process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
+    ) {
+      router.push("/student/login");
+      return;
+    }
     getElections();
   }, []);
 

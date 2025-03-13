@@ -150,6 +150,14 @@ export default function ElectionForm() {
   }
 
   useEffect(() => {
+    if (
+      !wallet.accounts.length ||
+      wallet.accounts[0] !=
+        process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
+    ) {
+      router.push("/admin/login");
+      return;
+    }
     const unsub = onSnapshot(collection(db, "Voters"), (snapshot) => {
       setDocuments(
         snapshot.docs.map((doc) => {
