@@ -287,7 +287,7 @@ export default function ElectionForm() {
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel className={`${labelStyle} text-md`}>
                     <h1 className="texl-3xl font-semibold my-2">
-                      Acknoledgement<span className="text-red-500">*</span>
+                      Acknowledgement<span className="text-red-500">*</span>
                     </h1>
                     By acknowledging, you confirm your understanding and
                     agreement with the terms and conditions of the election
