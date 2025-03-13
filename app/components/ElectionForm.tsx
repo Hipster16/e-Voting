@@ -34,6 +34,7 @@ import { student } from "@/Models/types/student";
 import { useMetaMask } from "../hooks/useMetamask";
 import { connectContractFactory } from "../utils";
 import electionAbi from "@/artifacts/contracts/ElectionContract/ElectionContract.json";
+import Loader from "./LoadingSpinner";
 
 export default function ElectionForm() {
   const labelStyle = "text-black text-xl font-medium";
@@ -316,7 +317,7 @@ export default function ElectionForm() {
                 disabled={submitting}
                 className="h-[50px] w-full bg-green-600 text-white text-md font-semibold mt-7 rounded-full hover:bg-black"
               >
-                Submit
+                {submitting ? <Loader color="white" size="9" /> : "Submit"}
               </button>
             ) : (
               <button

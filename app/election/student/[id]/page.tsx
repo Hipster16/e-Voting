@@ -38,6 +38,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { votingSchema } from "@/Models/schema/votingSchema";
 import { CandidateType } from "@/Models/types/candidates";
+import Loader from "@/app/components/LoadingSpinner";
 
 function ElectionInfo({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -110,9 +111,7 @@ function ElectionInfo({ params }: { params: { id: string } }) {
 
           <div className="pt-6">
             {isLoading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
+              <Loader color="blue-500" additionalClasses="py-12" size="12" />
             ) : (
               <>
                 <div className="rounded-lg overflow-hidden border border-slate-700 shadow-lg">
