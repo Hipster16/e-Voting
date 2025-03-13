@@ -153,10 +153,9 @@ export default function ElectionForm() {
       setDocuments(
         snapshot.docs.map((doc) => {
           return {
-            id: doc.data().id,
             email: doc.data().email,
             clgId: doc.data().clgId,
-            uid: doc.id,
+            username: doc.data().name,
             userhash: doc.data().userhash,
           };
         })

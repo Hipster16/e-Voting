@@ -35,14 +35,14 @@ export const columns: ColumnDef<student>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "username",
     header: ({ column }) => {
       return (
         <button
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <div className=" flex items-center gap-3">
-            Id
+            Name
             {column.getIsSorted() !== "desc" && (
               <MoveUp size={18} color="black" strokeWidth={1} />
             )}
@@ -53,10 +53,10 @@ export const columns: ColumnDef<student>[] = [
         </button>
       );
     },
-    cell: ({ row }) => <p>{row.getValue("id")}</p>,
+    cell: ({ row }) => <p>{row.getValue("username")}</p>,
   },
   {
-    accessorKey: "email",
+    accessorKey: "Email",
     header: ({ column }) => {
       return (
         <button
@@ -77,7 +77,7 @@ export const columns: ColumnDef<student>[] = [
     cell: ({ row }) => <p>{row.getValue("email")}</p>,
   },
   {
-    accessorKey: "clgId",
+    accessorKey: "ClgId",
     header: ({ column }) => {
       return (
         <button
