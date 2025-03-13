@@ -5,8 +5,8 @@ import React from "react";
 
 function AdminDashboard() {
   return (
-    <main className="max-w-screen min-h-full h-screen p-10 bg-gradient-to-r from-[#12141d] to-[#0f1117]">
-      <div className="w-full min-h-full rounded-3xl bg-[#1a1d24] p-10 flex flex-col items-center">
+    <main className="max-w-screen min-h-full h-screen p-10 bg-gradient-to-br from-gray-900 to-gray-950">
+      <div className="w-full min-h-full rounded-3xl bg-blue-950/20 border-2 border-blue-900 p-10 flex flex-col items-center">
         <Navbar />
         <div className="w-[90%] mt-10 flex justify-between items-center">
           <h1 className="text-5xl font-semibold my-10">Elections</h1>

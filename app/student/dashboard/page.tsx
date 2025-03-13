@@ -21,7 +21,7 @@ function Sidebar() {
   });
 
   return (
-    <div className="w-20 min-h-full flex flex-col items-center bg-gradient-to-b from-[#12141d] to-[#0f1117] p-4">
+    <div className="w-20 min-h-full flex flex-col items-center bg-blue-950/20 border-2 border-blue-900 p-4">
       <div className="mt-20">
         {" "}
         <div
@@ -55,11 +55,11 @@ function Sidebar() {
 
 function StudentDashboard() {
   return (
-    <main className="flex h-screen bg-gradient-to-r from-[#12141d] to-[#0f1117]">
+    <main className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
       <Sidebar />
 
       <div className="flex-1 max-w-screen p-6">
-        <div className="w-full min-h-full rounded-3xl p-6 flex flex-col bg-[#1a1d24]">
+        <div className="w-full min-h-full rounded-3xl p-6 flex flex-col bg-blue-950/20 border-2 border-blue-900">
           <Navbar />
           <div className="text-center mt-8">
             <h1 className="text-5xl font-semibold mb-6 text-white">
