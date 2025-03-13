@@ -55,11 +55,11 @@ export default function ElectionGrid() {
       wallet.accounts[0] ==
         process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
     ) {
-      router.push("/student/login");
+      router.push("/home");
       return;
     }
     getElections();
-  }, []);
+  }, [wallet]);
 
   return (
     <div className="w-full h-full flex flex-col items-center">

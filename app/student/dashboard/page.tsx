@@ -1,34 +1,23 @@
-"use client";
-
 import ElectionGrid from "@/app/components/ElectionGrid";
 import Navbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { Home, Search, FileBarChart } from "lucide-react";
 import { useMetaMask } from "@/app/hooks/useMetamask";
+import Link from "next/link";
 
 function Sidebar() {
-  const router = useRouter();
-  const { wallet } = useMetaMask();
-  useEffect(() => {
-    if (
-      !wallet.accounts[0] ||
-      wallet.accounts.length > 1 ||
-      wallet.accounts[0] === process.env.NEXT_PUBLIC_ADMIN_ADDRESS
-    ) {
-      router.push("/");
-    }
-  });
-
   return (
     <div className="w-20 min-h-full flex flex-col items-center bg-blue-950/20 border-2 border-blue-900 p-4">
       <div className="mt-20">
         {" "}
-        <div
-          onClick={() => router.push("/")}
-          className="p-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white hover:scale-110 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 ease-in-out cursor-pointer"
-        >
-          <Home size={24} className="transition-all duration-300 ease-in-out" />
+        <div className="p-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white hover:scale-110 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 ease-in-out cursor-pointer">
+          <Link href={"/"}>
+            <Home
+              size={24}
+              className="transition-all duration-300 ease-in-out"
+            />
+          </Link>
         </div>
       </div>
 

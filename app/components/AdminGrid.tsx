@@ -51,7 +51,7 @@ export default function ElectionGrid() {
       wallet.accounts[0] !=
         process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
     ) {
-      router.push("/admin/login");
+      router.push("/home");
       return;
     }
     if (!dataFetched) getAll();

@@ -18,7 +18,6 @@ export default function Navbar() {
 
   const handleLogout = () => {
     disconnectMetaMask();
-    router.push("/");
   };
 
   if (user === "admin" || user === "student") {
