@@ -27,22 +27,34 @@ export async function POST(req: NextRequest) {
       🔐 AUTHENTICATION PIN      
 =============================
 
-Dear **${name}**,
+Dear ${name},
 
-Your secure authentication PIN is: **${pin}**
+Your secure authentication PIN is: ${pin}
 
 Use this PIN to complete your verification.
 
 ⚠️ Do not share this PIN with anyone.
 
 Best regards,  
-**Voting App**
+Voting App
 `;
+
+const html = `
+<div style="font-family: Arial, sans-serif; padding: 10px;">
+    <h2 style="color: #333;">🔐 AUTHENTICATION PIN</h2>
+    <p>Dear <strong>${name}</strong>,</p>
+    <p>Your secure authentication PIN is: <strong>${pin}</strong></p>
+    <p style="color: red;"><b>⚠️ Do not share this PIN with anyone.</b></p>
+    <br>
+    <p>Best regards,</p>
+    <p><strong>Voting App</strong></p>
+</div> `
         const mailOptions = {
             from: process.env.NEXT_PUBLIC_EMAIL,
             to: email,
             subject: "Your Authentication PIN",
             text,
+            html
         };
 
         // Send the email
