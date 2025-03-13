@@ -56,7 +56,7 @@ export const columns: ColumnDef<student>[] = [
     cell: ({ row }) => <p>{row.getValue("username")}</p>,
   },
   {
-    accessorKey: "Email",
+    accessorKey: "email",
     header: ({ column }) => {
       return (
         <button
@@ -77,7 +77,7 @@ export const columns: ColumnDef<student>[] = [
     cell: ({ row }) => <p>{row.getValue("email")}</p>,
   },
   {
-    accessorKey: "ClgId",
+    accessorKey: "clgId",
     header: ({ column }) => {
       return (
         <button

@@ -160,7 +160,7 @@ export default function ElectionForm() {
     }
     const votersRef = collection(db, "Voters");
     const q = query(votersRef, where("verified", "==", true));
-    const unsub = onSnapshot(q, (snapshot) => {
+    const unsub = onSnapshot(votersRef, (snapshot) => {
       setDocuments(
         snapshot.docs.map((doc) => {
           return {
