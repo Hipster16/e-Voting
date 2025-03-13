@@ -28,7 +28,7 @@ import { formSchema } from "@/Models/schema/electionFormSchema";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { useRouter } from "next/navigation";
 import FormProgress from "./FormProgress";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import db from "@/firebase/firestore";
 import { student } from "@/Models/types/student";
 import { useMetaMask } from "../hooks/useMetamask";
@@ -158,7 +158,9 @@ export default function ElectionForm() {
       router.push("/admin/login");
       return;
     }
-    const unsub = onSnapshot(collection(db, "Voters"), (snapshot) => {
+    const votersRef = collection(db, "Voters");
+    const q = query(votersRef, where("verified", "==", true));
+    const unsub = onSnapshot(q, (snapshot) => {
       setDocuments(
         snapshot.docs.map((doc) => {
           return {
