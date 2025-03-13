@@ -64,11 +64,10 @@ export default function ElectionGrid() {
             return (
               <AdminCard
                 key={index}
-                eletionid={election.id}
+                address={election.election_address}
                 name={election.electionName}
                 desc={election.electionDesc}
                 endDate="Wed Nov 2, 2024"
-                pagelink="/admin/dashboard"
               />
             );
           })}

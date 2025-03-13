@@ -9,16 +9,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import React, { useEffect, useState } from "react";
-import { connectContractFactory } from "../utils";
+import { connectContract, connectContractFactory } from "../utils";
 import { useRouter } from "next/navigation";
-import { getBigInt } from "ethers";
 
 type ElectionCardProps = {
-  eletionid: number;
   name: string;
   desc: string;
   endDate: string;
-  pagelink: string;
+  address: string;
 };
 
 export default function ElectionCard(props: ElectionCardProps) {
@@ -27,12 +25,11 @@ export default function ElectionCard(props: ElectionCardProps) {
   const router = useRouter();
   const checkStatus = async () => {
     try {
-      const contract = await connectContractFactory();
-
-      await contract.getResults(getBigInt(props.eletionid.toString()));
-      setDisabled(true);
+      const contract = await connectContract(props.address);
+      const status = await contract.status();
+      setDisabled(!status);
     } catch (err) {
-      setDisabled(false);
+      console.log("Error in checking status", err);
     }
   };
   const checkChars = (str: string) => {
@@ -43,14 +40,12 @@ export default function ElectionCard(props: ElectionCardProps) {
     try {
       setSubmitting(true);
       const contract = await connectContractFactory();
-      const id = props.eletionid.toString();
-      let transaction = await contract.endElection(getBigInt(id));
-      await transaction.wait();
-      console.log(transaction);
-      setSubmitting(false);
-      router.push(props.pagelink);
+      await contract.endElection(props.address);
+      router.push("/admin/dashboard");
     } catch (e) {
       console.log(e);
+    } finally {
+      setSubmitting(false);
     }
   };
 
