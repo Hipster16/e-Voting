@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import AdminLoginCard from "./components/AdminLoginCard";
 import BackToHome from "./components/BackToHome";
-import FooterCopyright from "./components/FooterCopyright";
 
 const AnimatedBackground = dynamic(
   () => import("@/app/components/background/AnimatedBackground"),
@@ -20,7 +19,6 @@ function AdminLogin() {
       <div className="container mx-auto px-4 py-8 relative z-10">
         <BackToHome />
         <AdminLoginCard />
-        <FooterCopyright />
       </div>
     </div>
   );
