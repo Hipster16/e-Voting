@@ -4,10 +4,12 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Menu, X, ChevronRight, Vote } from "lucide-react"
+import { useScrollToHash } from "../utils/smoothScroll"
 
 export function LandingPageNavBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const handleHashClick = useScrollToHash()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +19,24 @@ export function LandingPageNavBar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const handleNavItemClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    handleHashClick(e)
+    if (isOpen) {
+      setIsOpen(false)
+    }
+  }
+
+  // Custom function to generate href for navigation items
+  const getNavHref = (item: string) => {
+    if (item === "Use Cases") {
+      return "#use-cases";
+    }
+    return `#${item.toLowerCase().replace(/\s+/g, "-")}`;
+  };
+
+  // Navigation items for both desktop and mobile
+  const navItems = ["Features", "How it Works", "Benefits", "Use Cases"];
 
   return (
     <motion.header
@@ -82,14 +102,15 @@ export function LandingPageNavBar() {
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            {["Features", "How it Works", "Benefits", "About"].map((item) => (
-              <Link
+            {navItems.map((item) => (
+              <a
                 key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                href={getNavHref(item)}
                 className="text-gray-300 hover:text-emerald-400 transition-colors duration-200 text-sm font-medium"
+                onClick={handleNavItemClick}
               >
                 {item}
-              </Link>
+              </a>
             ))}
             <Link
               href="/home"
@@ -118,15 +139,15 @@ export function LandingPageNavBar() {
         className="md:hidden overflow-hidden bg-gray-900/95 backdrop-blur-md"
       >
         <div className="px-4 py-3 space-y-1">
-          {["Features", "How it Works", "Benefits", "About"].map((item) => (
-            <Link
+          {navItems.map((item) => (
+            <a
               key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+              href={getNavHref(item)}
               className="block px-3 py-2 text-base font-medium text-gray-300 hover:text-emerald-400 hover:bg-gray-800/50 rounded-md"
-              onClick={() => setIsOpen(false)}
+              onClick={handleNavItemClick}
             >
               {item}
-            </Link>
+            </a>
           ))}
           <Link
             href="/home"

@@ -150,7 +150,7 @@ export function Benefits() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-block px-3 py-1 mb-4 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+              <div id="use-cases" className="inline-block px-3 py-1 mb-4 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
                 VERSATILE APPLICATIONS
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Use Cases</h2>

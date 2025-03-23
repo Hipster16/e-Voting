@@ -139,9 +139,7 @@ export const footerLinks = [
       links: [
         { name: "Features", href: "#features" },
         { name: "How It Works", href: "#how-it-works" },
-        { name: "Benefits", href: "#benefits" },
-        { name: "Security", href: "#security" },
-        { name: "Implementation", href: "#implementation" },
+        { name: "Benefits", href: "#benefits" },``
       ],
     },
     {

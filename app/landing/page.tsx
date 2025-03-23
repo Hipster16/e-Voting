@@ -8,6 +8,7 @@ import { Benefits } from "./components/Benefits"
 import { Testimonials } from "./components/Testimonials"
 import { Footer } from "./components/Footer"
 import { motion, AnimatePresence } from "framer-motion"
+import { scrollToElement } from "./utils/smoothScroll"
 
 export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -19,6 +20,18 @@ export default function LandingPage() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (!isLoading) {
+      const hash = window.location.hash
+      if (hash) {
+        const id = hash.substring(1)
+        setTimeout(() => {
+          scrollToElement(id)
+        }, 100)
+      }
+    }
+  }, [isLoading])
 
   return (
     <AnimatePresence>

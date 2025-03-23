@@ -5,6 +5,15 @@ import { motion, useInView } from "framer-motion"
 import Link from "next/link"
 import { Vote, Github, Twitter, Linkedin, Mail, ArrowRight, ChevronRight, Check } from "lucide-react"
 import { footerLinks } from "../data/data"
+import { useScrollToHash } from "../utils/smoothScroll"
+
+// Type definition for the link object
+type FooterLink = { name: string; href: string }
+
+// Helper function to check if the link is a string or an object
+const isLinkObject = (link: string | FooterLink): link is FooterLink => {
+  return typeof link === 'object' && link !== null && 'href' in link && 'name' in link;
+}
 
 export function Footer() {
   const ref = useRef(null)
@@ -12,6 +21,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
   const [email, setEmail] = useState("")
   const [subscribed, setSubscribed] = useState(false)
+  const handleHashClick = useScrollToHash()
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,6 +71,7 @@ export function Footer() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-colors duration-200"
+                  onClick={handleHashClick}
                 >
                   <Twitter className="w-5 h-5" />
                 </motion.a>
@@ -69,6 +80,7 @@ export function Footer() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-colors duration-200"
+                  onClick={handleHashClick}
                 >
                   <Linkedin className="w-5 h-5" />
                 </motion.a>
@@ -153,6 +165,7 @@ export function Footer() {
                   whileHover={{ y: -3, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-colors duration-200"
+                  onClick={social.href.startsWith('#') ? handleHashClick : undefined}
                 >
                   <social.icon className="w-5 h-5" />
                 </motion.a>
@@ -166,13 +179,25 @@ export function Footer() {
               <ul className="space-y-3">
                 {column.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <a
-                      href={link.href}
-                      className="text-gray-400 hover:text-emerald-400 transition-colors duration-200 flex items-center group"
-                    >
-                      <ChevronRight className="w-4 h-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
-                      <span>{link.name}</span>
-                    </a>
+                    {isLinkObject(link) ? (
+                      <a
+                        href={link.href}
+                        className="text-gray-400 hover:text-emerald-400 transition-colors duration-200 flex items-center group"
+                        onClick={link.href.startsWith('#') ? handleHashClick : undefined}
+                      >
+                        <ChevronRight className="w-4 h-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
+                        <span>{link.name}</span>
+                      </a>
+                    ) : (
+                      <a
+                        href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
+                        className="text-gray-400 hover:text-emerald-400 transition-colors duration-200 flex items-center group"
+                        onClick={handleHashClick}
+                      >
+                        <ChevronRight className="w-4 h-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
+                        <span>{link}</span>
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -184,21 +209,7 @@ export function Footer() {
           variants={itemVariants}
           className="pt-8 mt-8 border-t border-gray-800/50 flex flex-col md:flex-row justify-between items-center"
         >
-          <p className="text-gray-500 text-sm mb-4 md:mb-0">&copy; {currentYear} e-Vote. All rights reserved.</p>
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-            <a href="#privacy" className="text-gray-500 hover:text-emerald-400 text-sm">
-              Privacy Policy
-            </a>
-            <a href="#terms" className="text-gray-500 hover:text-emerald-400 text-sm">
-              Terms of Service
-            </a>
-            <a href="#cookies" className="text-gray-500 hover:text-emerald-400 text-sm">
-              Cookies Policy
-            </a>
-            <a href="#security" className="text-gray-500 hover:text-emerald-400 text-sm">
-              Security
-            </a>
-          </div>
+          <p className="text-gray-500 text-sm mb-4 md:mb-0">&copy; {currentYear} e-Vote. All rights reserved.</p> 
         </motion.div>
       </div>
 
