@@ -97,6 +97,8 @@ export const gassless_transact = async (tx: Datatype) => {
   if (userOpReceipt.success == "true") {
     console.log("UserOp receipt", userOpReceipt);
     console.log("Transaction receipt", userOpReceipt.receipt);
+  } else {
+    throw new Error("Transaction failed: " + JSON.stringify(userOpReceipt));
   }
   console.log("end")
 }
