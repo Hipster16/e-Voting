@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useState } from "react"
 import { LandingPageNavBar } from "./components/NavBar"
 import { Hero } from "./components/Hero"
@@ -16,7 +17,7 @@ export default function LandingPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1500)
+    }, 500)
 
     return () => clearTimeout(timer)
   }, [])
