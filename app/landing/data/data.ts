@@ -1,6 +1,7 @@
 import { BarChart3, CheckCircle, Clock, DollarSign, Eye, Fingerprint, Globe, Lock, ShieldCheck, UserCheck, UserPlus, Users, Vote } from "lucide-react"
 import rhon from "./images/rhon.png"
 import ritin from "./images/ritin.png"
+import vinu from "./images/vinu.png"
 
 export const benefits = [
     {
@@ -228,4 +229,12 @@ export const testimonials = [
       avatar: ritin,
       rating: 5,
     },
+    {
+      name: "Vinu B Kurup",
+      role: "Blockchain Mentor",
+      organization: "MBCET",
+      quote:"Fabulous Exquisite",
+      avatar: vinu,
+      rating: 5,
+    }
   ]
