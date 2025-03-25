@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useMetaMask } from "@/app/hooks/useMetamask";
@@ -22,7 +22,7 @@ export default function ElectionContent({ electionId }: ElectionContentProps) {
 
   const { wallet } = useMetaMask();
 
-  const getElectionDetails = async () => {
+  const getElectionDetails = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -53,7 +53,7 @@ export default function ElectionContent({ electionId }: ElectionContentProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [electionId, router]);
 
   useEffect(() => {
     if (
@@ -65,7 +65,7 @@ export default function ElectionContent({ electionId }: ElectionContentProps) {
       return;
     }
     getElectionDetails();
-  }, [wallet.accounts, router]);
+  }, [wallet.accounts, router, getElectionDetails]);
 
   if (error) {
     const alreadyVotedError = error.toLowerCase().includes("already voted") || 

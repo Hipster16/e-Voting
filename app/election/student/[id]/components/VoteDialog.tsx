@@ -28,7 +28,7 @@ import TransactionReceipt from "./TransactionReceipt";
 import DoubleVoteAlert from "./DoubleVoteAlert";
 import NotParticipantAlert from "./NotParticipantAlert";
 import ProcessingTransaction from "./ProcessingTransaction";
-import { decodeErrorMessage } from "../page";
+import { decodeErrorMessage } from "../utils/utils";
 
 interface VoteDialogProps {
   email: string;
