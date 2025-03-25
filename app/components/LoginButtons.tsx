@@ -3,6 +3,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import auth from "@/firebase/auth";
+import { motion } from "framer-motion";
+import { UserCircle, Users, UserPlus, LogIn, ChevronRight } from "lucide-react";
 
 import {
   Popover,
@@ -38,50 +40,89 @@ export default function LoginButtons() {
     return unsubscribe;
   }, []);
 
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: { scale: 1.03 },
+    tap: { scale: 0.97 }
+  };
+
   if (!loggedIn) {
     return (
-      <div className="w-full max-w-md mx-auto ">
+      <div className="w-full max-w-md mx-auto">
         {!visible ? (
-          <button
-            className="w-full bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          <motion.button
+            variants={buttonVariants}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-base font-medium py-3 px-6 rounded-lg shadow-lg shadow-emerald-600/20 hover:shadow-emerald-500/40 hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 flex items-center justify-center space-x-2"
             onClick={handleClick}
           >
-            Login
-          </button>
+            <UserCircle className="w-5 h-5 mr-1" />
+            <span>Get Started</span>
+          </motion.button>
         ) : (
-          <div className="w-full flex flex-col sm:flex-row justify-between gap-4">
-            <button
-              className="flex-1 bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          <div className="w-full flex flex-col sm:flex-row justify-between gap-3">
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="flex-1 bg-gradient-to-br from-indigo-600 to-purple-600 text-white text-base font-medium py-3 px-5 rounded-lg shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 transition-all duration-300 flex items-center justify-center"
               onClick={handleAdminLogin}
             >
-              Admin
-            </button>
+              <Users className="w-4 h-4 mr-2" />
+              <span>Admin</span>
+            </motion.button>
+            
             <Popover>
-              <PopoverTrigger>
-            <button
-              className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-            >
-              Voter
-            </button>
-            </PopoverTrigger>
-            <PopoverContent className="bg-slate-600 border-0 flex flex-col gap-2 max-w-[200px]">
-            <button
-              className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-              onClick={handleStudentSignin}
-            >
-              Register
-            </button>
-            <button
-              className="flex-1 bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-              onClick={handleStudentLogin}
-            >
-              Login
-            </button>
-            </PopoverContent>
+              <PopoverTrigger asChild>
+                <motion.button
+                  variants={buttonVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-base font-medium py-3 px-5 rounded-lg shadow-lg shadow-emerald-600/20 hover:shadow-emerald-500/30 transition-all duration-300 flex items-center justify-center"
+                >
+                  <UserCircle className="w-4 h-4 mr-2" />
+                  <span>Voter</span>
+                  <ChevronRight className="w-4 h-4 ml-1 opacity-70" />
+                </motion.button>
+              </PopoverTrigger>
+              
+              <PopoverContent className="p-2 bg-gray-800/90 backdrop-blur-sm border border-gray-700/50 rounded-xl shadow-xl w-auto">
+                <div className="flex flex-col gap-2 min-w-[180px]">
+                  <motion.button
+                    variants={buttonVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="w-full bg-gradient-to-r from-emerald-600/90 to-emerald-500/90 text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 flex items-center"
+                    onClick={handleStudentSignin}
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    <span>Register</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    variants={buttonVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="w-full bg-gradient-to-r from-teal-600/90 to-teal-500/90 text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:from-teal-500 hover:to-teal-400 transition-all duration-300 flex items-center"
+                    onClick={handleStudentLogin}
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    <span>Login</span>
+                  </motion.button>
+                </div>
+              </PopoverContent>
             </Popover>
           </div>
         )}
       </div>
     );
   }
+  
+  return null;
 }

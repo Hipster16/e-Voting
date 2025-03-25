@@ -1,16 +1,27 @@
-import LoginForm from "@/app/components/LoginForm";
-import MetamaskConnect from "@/app/components/MetamaskConnect";
 import React from "react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+import LoginCard from "./components/LoginCard";
+import BackToHome from "./components/BackToHome"
+import FooterCopyright from "./components/FooterCopyright";
 
-function StudentLogin() {
+const AnimatedBackground = dynamic(
+  () => import("@/app/components/background/AnimatedBackground"),
+  { ssr: false }
+);
+
+export default function StudentLogin() {
   return (
-    <div className="h-screen w-screen flex justify-center items-center bg-gradient-to-br from-blue-700/30 to-blue-900/50">
-      <div className="w-[500px] h-min bg-white border-1 flex flex-col justify-between item-center gap-10 p-10 rounded-2xl">
-        <h1 className="text-3xl text-center text-black font-semibold">Login</h1>
-        <LoginForm />
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-gray-100 overflow-hidden">
+      <Suspense fallback={<div className="absolute inset-0 bg-gray-950" />}>
+        <AnimatedBackground />
+      </Suspense>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <BackToHome />
+        <LoginCard />
+        <FooterCopyright />
       </div>
     </div>
   );
 }
-
-export default StudentLogin;

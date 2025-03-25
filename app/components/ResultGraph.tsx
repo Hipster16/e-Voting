@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BarDatumWithColor, ResponsiveBar } from "@nivo/bar";
 import { useRouter } from "next/navigation";
 import { connectContract } from "../utils";
 import { CandidateType } from "@/Models/types/candidates";
 import { useMetaMask } from "../hooks/useMetamask";
+import { Award, CheckCircle2, XCircle, BarChart3 } from "lucide-react";
 
 export default function ResultGraph(props: { id: string }) {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function ResultGraph(props: { id: string }) {
   const { wallet } = useMetaMask();
   const [showingStats, setShowingStats] = useState(false);
 
-  async function handleFetchResult() {
+  const handleFetchResult = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -72,7 +73,7 @@ export default function ResultGraph(props: { id: string }) {
               CandidateId: el.CandidateId,
               Vote: el.Vote,
               Percentage: percentage,
-              color: "#ec4899", // Pink
+              color: "#6b7280", // Gray
               labelColor: "white",
             };
           }
@@ -92,38 +93,24 @@ export default function ResultGraph(props: { id: string }) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [props.id, router, wallet.accounts]);
 
   useEffect(() => {
     if (!wallet.accounts.length || wallet.accounts.length > 1) {
       router.push("/admin/login");
       return;
     }
-  });
+  }, [wallet.accounts, router]);
 
   return (
     <div className="w-full flex flex-col items-center">
       {!showingStats ? (
-        <div className="w-full max-w-xl bg-gray-800/30 border border-gray-700/50 rounded-2xl p-8 flex flex-col items-center text-center">
-          <div className="h-24 w-24 bg-blue-500/20 rounded-full flex items-center justify-center mb-6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="40"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-blue-400"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
+        <div className="w-full max-w-xl bg-gray-800/20 border border-gray-700/30 rounded-xl p-8 flex flex-col items-center text-center">
+          <div className="h-20 w-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
+            <BarChart3 className="h-8 w-8 text-emerald-400" />
           </div>
 
-          <h2 className="text-2xl font-bold mb-3">View Election Results</h2>
+          <h2 className="text-2xl font-bold mb-3 text-white">View Election Results</h2>
           <p className="text-gray-400 mb-8">
             Click the button below to view the final tallies and discover the
             winner of this election.
@@ -131,15 +118,16 @@ export default function ResultGraph(props: { id: string }) {
 
           {error && (
             <div className="w-full p-4 mb-6 bg-red-900/20 border border-red-700/30 rounded-lg text-red-300 text-center">
+              <XCircle className="h-5 w-5 mx-auto mb-2" />
               {error}
             </div>
           )}
 
           <button
-            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all ${
+            className={`w-full py-3.5 px-6 rounded-lg font-medium text-base transition-all ${
               loading
-                ? "bg-blue-700/50 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98]"
+                ? "bg-emerald-700/50 cursor-not-allowed"
+                : "bg-emerald-600 hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-500/20 active:scale-[0.98]"
             }`}
             onClick={handleFetchResult}
             disabled={loading}
@@ -170,21 +158,7 @@ export default function ResultGraph(props: { id: string }) {
               </div>
             ) : (
               <span className="flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2"
-                >
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
+                <CheckCircle2 className="mr-2 h-5 w-5" />
                 Show Results
               </span>
             )}
@@ -193,18 +167,21 @@ export default function ResultGraph(props: { id: string }) {
       ) : (
         <div className="w-full flex flex-col items-center space-y-8">
           {/* Winner Announcement */}
-          <div className="w-full max-w-fit py-6 px-8 rounded-2xl bg-gradient-to-r from-blue-600/20 to-green-600/20 border border-blue-500/30 shadow-lg shadow-blue-500/5 text-center">
-            <h2 className="text-3xl font-bold text-white">{winner}</h2>
+          <div className="w-full max-w-fit py-5 px-8 rounded-xl bg-gradient-to-r from-emerald-600/10 to-emerald-500/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/5 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{winner}</h2>
             <p className="text-gray-300 mt-2">Total votes: {totalVotes}</p>
           </div>
 
           {/* Results Graph Card */}
-          <div className="w-full max-w-4xl bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden shadow-xl">
-            <div className="p-6 text-center border-b border-gray-700/50">
-              <h3 className="text-xl font-semibold">Vote Distribution</h3>
+          <div className="w-full bg-gray-800/20 backdrop-blur-sm border border-gray-700/30 rounded-xl overflow-hidden shadow-lg">
+            <div className="p-4 text-center border-b border-gray-700/30">
+              <div className="flex items-center justify-center gap-2">
+                <Award className="h-5 w-5 text-emerald-400" />
+                <h3 className="text-lg font-medium text-white">Vote Distribution</h3>
+              </div>
             </div>
 
-            <div className="p-6 h-[500px]">
+            <div className="p-4 h-[400px]">
               <ResponsiveBar
                 data={result}
                 indexBy="CandidateName"
@@ -213,7 +190,7 @@ export default function ResultGraph(props: { id: string }) {
                 margin={{ top: 50, right: 130, bottom: 70, left: 70 }}
                 padding={0.3}
                 valueScale={{ type: "linear" }}
-                borderRadius={6}
+                borderRadius={4}
                 borderWidth={1}
                 borderColor={{ from: "color", modifiers: [["darker", 0.6]] }}
                 axisTop={null}
@@ -325,45 +302,17 @@ export default function ResultGraph(props: { id: string }) {
           <div className="flex space-x-4">
             <button
               onClick={() => setShowingStats(false)}
-              className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors flex items-center"
+              className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors flex items-center text-sm"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2"
-              >
-                <path d="M3 12h18"></path>
-                <path d="M3 6h18"></path>
-                <path d="M3 18h18"></path>
-              </svg>
+              <XCircle className="h-4 w-4 mr-2" />
               Hide Results
             </button>
 
             <button
               onClick={() => router.push(`/student/dashboard`)}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors flex items-center"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white transition-colors flex items-center text-sm"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2"
-              >
-                <path d="m9 18 6-6-6-6"></path>
-              </svg>
+              <CheckCircle2 className="h-4 w-4 mr-2" />
               Back to Dashboard
             </button>
           </div>

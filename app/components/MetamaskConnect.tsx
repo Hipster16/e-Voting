@@ -1,55 +1,55 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useMetaMask } from "../hooks/useMetamask";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { Download, RefreshCw } from "lucide-react";
 
 export default function MetamaskConnect() {
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
-  const router = useRouter();
-  useEffect(() => {
-    if (hasProvider && wallet.accounts.length > 0) {
-      if (
-        wallet.accounts[0] ==
-        process.env.NEXT_PUBLIC_ADMIN_WALLET_ID?.toLowerCase()
-      ) {
-        router.push("/admin/dashboard");
-      } else {
-      }
-    }
-  });
 
   return (
     <>
       {!hasProvider && (
         <a
-          href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?pli=1"
-          className="bg-blue-600 text-lg font-extrabold py-4 px-10 rounded-full hover:bg-black"
+          href="https://metamask.io/download/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200 group"
         >
-          Install Metamask
+          <Download className="w-5 h-5 mr-2 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+          <span className="font-medium">Install MetaMask</span>
         </a>
       )}
-      {hasProvider && wallet.accounts.length == 0 && (
-        <div className="w-full">
-          <button
-            disabled={isConnecting}
-            onClick={connectMetaMask}
-            className="bg-blue-600 text-lg font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly"
-          >
+      
+      {hasProvider && wallet.accounts.length === 0 && (
+        <button
+          disabled={isConnecting}
+          onClick={connectMetaMask}
+          className="flex items-center justify-center w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isConnecting ? (
+            <RefreshCw className="w-5 h-5 mr-2 text-emerald-400 animate-spin" />
+          ) : (
             <Image
               src="/metamask.png"
-              alt=""
+              alt="MetaMask"
               width={20}
               height={20}
-              className="m-1 mr-2"
+              className="mr-2"
             />
-            Connect Metamask
-          </button>
-        </div>
+          )}
+          <span className="font-medium">
+            {isConnecting ? "Connecting..." : "Connect MetaMask"}
+          </span>
+        </button>
       )}
+      
       {hasProvider && wallet.accounts.length > 0 && (
-        <div className="bg-blue-600 text-sm font-extrabold py-4 px-10 rounded-full hover:bg-black w-full flex justify-evenly">
-          {`Connect from ${wallet.accounts[0].slice(0, 6).concat("...")}`}
+        <div className="flex items-center justify-center w-full py-3 px-4 bg-gray-800 text-white rounded-lg border border-emerald-600/30">
+          <div className="flex items-center">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
+            <span className="text-sm font-medium text-emerald-300">{`Connected: ${wallet.accounts[0].slice(0, 6)}...${wallet.accounts[0].slice(-4)}`}</span>
+          </div>
         </div>
       )}
     </>

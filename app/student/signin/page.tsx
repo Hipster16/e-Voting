@@ -1,17 +1,27 @@
-import Signin from "@/app/components/StudentSignin";
 import React from "react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
-function StudentSignin() {
-  return (
-    <div className="h-screen w-screen flex justify-center items-center  bg-gradient-to-br from-blue-700/30 to-blue-900/50">
-      <div className="w-[500px] h-min bg-white border-1 flex flex-col justify-between item-center gap-10 p-10 rounded-2xl">
-        <h1 className="text-3xl text-center text-black font-semibold">
-          Register
-        </h1>
-        <Signin />
+const SigninContent = dynamic(
+  () => import("./components/SigninContent"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-gray-800 border-t-emerald-500 rounded-full animate-spin"></div>
       </div>
-    </div>
+    )
+  }
+);
+
+export default function StudentSignin() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-gray-800 border-t-emerald-500 rounded-full animate-spin"></div>
+      </div>
+    }>
+      <SigninContent />
+    </Suspense>
   );
 }
-
-export default StudentSignin;

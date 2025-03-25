@@ -1,32 +1,29 @@
-import Navbar from "@/app/components/Navbar";
-import ResultGraph from "@/app/components/ResultGraph";
 import React from "react";
+import dynamic from "next/dynamic";
+import Navbar from "./components/Navbar";
+import ResultCard from "./components/ResultCard";
 
-function Result({ params }: { params: { id: string } }) {
+const AnimatedBackground = dynamic(() => import("./components/AnimatedBackground"), { ssr: false });
+
+export default function Result({ params }: { params: { id: string } }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-white">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="w-full rounded-3xl border p-5 border-blue-800/50 bg-blue-950/20 backdrop-blur-sm shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-gray-950 text-white">
+      <AnimatedBackground />
+      
+      <div className="sticky top-0 z-20 w-full bg-gray-950/80 backdrop-blur-md">
+        <div className="w-full border-b border-gray-800/40">
+          <div className="h-1 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400"></div>
           <Navbar />
-
-          <div className="p-6 md:p-10">
-            <header className="text-center mb-10">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent inline-block">
-                Election Results
-              </h1>
-              <p className="mt-3 text-gray-400 max-w-2xl mx-auto">
-                View the final tallies and winner of election #{params.id}
-              </p>
-            </header>
-
-            <section className="flex flex-col items-center gap-8">
-              <ResultGraph id={params.id} />
-            </section>
-          </div>
         </div>
       </div>
+      
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="flex flex-col items-center justify-center">
+          <ResultCard id={params.id} />
+          
+          <div className="h-24"></div>
+        </div>
+      </main>
     </div>
   );
 }
-
-export default Result;

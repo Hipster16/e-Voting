@@ -1,14 +1,24 @@
-import MetamaskConnect from "@/app/components/MetamaskConnect";
 import React from "react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+import AdminLoginCard from "./components/AdminLoginCard";
+import BackToHome from "./components/BackToHome";
+
+const AnimatedBackground = dynamic(
+  () => import("@/app/components/background/AnimatedBackground"),
+  { ssr: false }
+);
 
 function AdminLogin() {
   return (
-    <div className="h-screen w-screen flex justify-center items-center bg-gradient-to-br from-blue-700/30 to-blue-900/50">
-      <div className="w-[400px] h-min bg-white border-1 flex flex-col justify-between item-center gap-10 p-10 rounded-2xl">
-        <p className="text-2xl text-center text-black font-extrabold">
-          Connect to metamask
-        </p>
-        <MetamaskConnect />
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-gray-100 overflow-hidden">
+      <Suspense fallback={<div className="absolute inset-0 bg-gray-950" />}>
+        <AnimatedBackground />
+      </Suspense>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <BackToHome />
+        <AdminLoginCard />
       </div>
     </div>
   );
