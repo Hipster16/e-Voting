@@ -193,6 +193,7 @@ Sophisticated error handling for various scenarios:
 
 - **Mobile Application**: Native mobile apps for iOS and Android
 - **DAO Integration**: Governance features for community-run elections
+- **Biometric Verification**: Integrate fingerprint, facial recognition, or iris scanning to enhance voter authentication security and prevent identity fraud while maintaining privacy through zero-knowledge proofs
 
 ## 🤝 Contributing
 
@@ -206,7 +207,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License
 
 ## 📬 Contact
 
