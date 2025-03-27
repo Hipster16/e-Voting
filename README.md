@@ -113,7 +113,7 @@ npm run dev
    - **New RPC URL**: https://chainlist.org/chain/80002
    - **Chain ID**: 80002
    - **Currency Symbol**: ETH
-   - **Block Explorer URL**: https://explorer.amoy.eth.zkevm.io
+   - **Block Explorer URL**: amoy.polygonscan.com
    - Click "Save"
 
 ### Getting Test ETH for Amoy Testnet
